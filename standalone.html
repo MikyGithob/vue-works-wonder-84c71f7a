@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Package Selection App</title>
+    <title>Complete Presentation App</title>
     
     <!-- React and ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -20,6 +20,10 @@
     
     <!-- React Query -->
     <script src="https://unpkg.com/@tanstack/react-query@latest/build/umd/index.production.js"></script>
+
+    <!-- Embla Carousel -->
+    <script src="https://unpkg.com/embla-carousel/embla-carousel.umd.js"></script>
+    <script src="https://unpkg.com/embla-carousel-react/embla-carousel-react.umd.js"></script>
 
     <!-- Shadcn-like Styles -->
     <style>
@@ -57,6 +61,17 @@
         .card {
             @apply bg-white rounded-lg shadow-sm border border-gray-200;
         }
+
+        .embla {
+            overflow: hidden;
+        }
+        .embla__container {
+            display: flex;
+        }
+        .embla__slide {
+            flex: 0 0 100%;
+            min-width: 0;
+        }
     </style>
 </head>
 <body>
@@ -68,56 +83,185 @@
             platinum: [
                 {
                     id: 1,
-                    title: "Item Title",
-                    points: ["Bullet Point", "Bullet Point", "Bullet Point", "Bullet Point"],
+                    title: "Platinum Package A",
+                    points: ["Premium Feature 1", "Premium Feature 2", "Premium Feature 3", "Premium Feature 4"],
                     price: 4299.23,
-                    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                    description: "Our most comprehensive package with all premium features included."
                 },
                 {
                     id: 2,
-                    title: "Item Title",
-                    points: ["Bullet Point", "Bullet Point", "Bullet Point", "Bullet Point"],
+                    title: "Platinum Package B",
+                    points: ["Premium Feature 5", "Premium Feature 6", "Premium Feature 7", "Premium Feature 8"],
                     price: 4299.23,
-                    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                    description: "Alternative platinum package with different premium features."
                 }
             ],
             gold: [
                 {
                     id: 4,
-                    title: "Item Title",
-                    points: ["Bullet Point", "Bullet Point", "Bullet Point", "Bullet Point"],
+                    title: "Gold Package",
+                    points: ["Gold Feature 1", "Gold Feature 2", "Gold Feature 3", "Gold Feature 4"],
                     price: 4209.23,
-                    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                    description: "Advanced features for demanding users."
                 }
             ],
             silver: [
                 {
                     id: 5,
-                    title: "Item Title",
-                    points: ["Bullet Point", "Bullet Point", "Bullet Point", "Bullet Point"],
+                    title: "Silver Package",
+                    points: ["Silver Feature 1", "Silver Feature 2", "Silver Feature 3", "Silver Feature 4"],
                     price: 3209.23,
-                    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                    description: "Essential features for basic needs."
                 }
             ],
             addons: [
                 {
                     id: 6,
-                    title: "Item Title",
-                    points: ["Bullet Point", "Bullet Point", "Bullet Point", "Bullet Point"],
-                    price: 4269.23,
-                    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                    title: "Premium Add-on",
+                    points: ["Add-on Feature 1", "Add-on Feature 2", "Add-on Feature 3", "Add-on Feature 4"],
+                    price: 269.23,
+                    description: "Enhance your package with premium add-ons."
                 },
                 {
                     id: 7,
-                    title: "Item Title",
-                    points: ["Bullet Point", "Bullet Point", "Bullet Point", "Bullet Point"],
-                    price: 4269.23,
-                    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                    title: "Basic Add-on",
+                    points: ["Basic Feature 1", "Basic Feature 2", "Basic Feature 3", "Basic Feature 4"],
+                    price: 169.23,
+                    description: "Essential add-ons for any package."
                 }
             ]
         };
 
+        // Toast Component
+        const Toast = ({ message, onClose }) => {
+            React.useEffect(() => {
+                const timer = setTimeout(onClose, 3000);
+                return () => clearTimeout(timer);
+            }, [onClose]);
+
+            return (
+                <div className="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg">
+                    {message}
+                </div>
+            );
+        };
+
+        // Custom Hooks
+        const useToast = () => {
+            const [toast, setToast] = React.useState(null);
+
+            const showToast = (message) => {
+                setToast(message);
+            };
+
+            const hideToast = () => {
+                setToast(null);
+            };
+
+            return { toast, showToast, hideToast };
+        };
+
         // Components
+        const PresentationSlide = () => {
+            const slideUrl = "https://www.dickinson.edu/download/downloads/id/1076/sample_powerpoint_slides.pptx";
+            
+            return (
+                <div className="p-8">
+                    <div className="max-w-4xl mx-auto aspect-video bg-white/95 shadow-lg rounded-lg">
+                        <div className="h-full flex flex-col items-center justify-center p-8">
+                            <h1 className="text-2xl text-green-500 mb-4">Sample PowerPoint Presentation</h1>
+                            <div className="w-full h-full relative">
+                                <iframe 
+                                    src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(slideUrl)}`}
+                                    className="w-full h-full border-none"
+                                    title="Presentation Slide"
+                                    allow="fullscreen"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const QuestionPage = () => {
+            const [answer, setAnswer] = React.useState(null);
+            const [currentSlide, setCurrentSlide] = React.useState(0);
+            
+            const menuItems = [
+                {
+                    id: 1,
+                    title: "Allergy-Safe Option 1",
+                    points: ["Hypoallergenic", "Allergen-free", "Safe for sensitive users", "Doctor recommended"],
+                    price: 458.21,
+                    description: "Specially designed for users with allergies and sensitivities."
+                },
+                {
+                    id: 2,
+                    title: "Allergy-Safe Option 2",
+                    points: ["Natural materials", "Chemical-free", "Eco-friendly", "Gentle formula"],
+                    price: 534.50,
+                    description: "Natural and safe alternatives for allergy sufferers."
+                },
+                {
+                    id: 3,
+                    title: "Standard Option",
+                    points: ["Regular materials", "Standard formula", "Cost-effective", "Popular choice"],
+                    price: 612.75,
+                    description: "Our standard option for users without specific allergies."
+                }
+            ];
+
+            return (
+                <div className="p-8">
+                    <div className="max-w-4xl mx-auto space-y-8">
+                        <div className="bg-white p-8 rounded-lg shadow-sm">
+                            <h2 className="text-2xl text-center mb-8">Does Anyone Suffer from Allergies?</h2>
+                            
+                            <div className="flex justify-center gap-4 mb-8">
+                                <button 
+                                    className={`btn ${answer === "yes" ? 'bg-blue-500 text-white' : 'bg-gray-100'}`}
+                                    onClick={() => setAnswer("yes")}
+                                >
+                                    Yes
+                                </button>
+                                <button 
+                                    className={`btn ${answer === "no" ? 'bg-blue-500 text-white' : 'bg-gray-100'}`}
+                                    onClick={() => setAnswer("no")}
+                                >
+                                    No
+                                </button>
+                            </div>
+
+                            <div className="embla">
+                                <div className="embla__container">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4">
+                                        {menuItems.map((item) => (
+                                            <div key={item.id} className="card">
+                                                <div className="p-6">
+                                                    <h3 className="font-bold mb-2">{item.title}</h3>
+                                                    <ul className="list-disc pl-5 mb-4">
+                                                        {item.points.map((point, index) => (
+                                                            <li key={index}>{point}</li>
+                                                        ))}
+                                                    </ul>
+                                                    <p className="text-sm text-gray-600 mb-4">{item.description}</p>
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="font-bold">${item.price.toFixed(2)}</span>
+                                                        <button className="btn bg-blue-500 text-white">Select</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
         const PackageItem = ({ pkg, onRemove, onUpdateTitle, isDraggable = true }) => {
             const [isEditing, setIsEditing] = React.useState(false);
             const [title, setTitle] = React.useState(pkg.title);
@@ -136,7 +280,13 @@
             };
 
             return (
-                <div className="card p-6 mb-4 relative">
+                <div 
+                    className="card p-6 mb-4 relative"
+                    draggable={isDraggable}
+                    onDragStart={(e) => {
+                        e.dataTransfer.setData("application/json", JSON.stringify(pkg));
+                    }}
+                >
                     {onRemove && (
                         <button 
                             onClick={() => onRemove(pkg)}
@@ -267,7 +417,8 @@
             );
         };
 
-        const App = () => {
+        const PackageSelection = () => {
+            const { toast, showToast, hideToast } = useToast();
             const [packages, setPackages] = React.useState(initialPackages);
             const [currentIndex, setCurrentIndex] = React.useState(0);
             const [customPackages, setCustomPackages] = React.useState([]);
@@ -295,6 +446,8 @@
                     newPackages[targetSection] = [...(prev[targetSection] || []), item];
                     return newPackages;
                 });
+
+                showToast(`Moved ${item.title} to ${targetSection} package`);
             };
 
             const handleRemoveItem = (item, section) => {
@@ -304,6 +457,7 @@
                     newPackages.addons = [...prev.addons, item];
                     return newPackages;
                 });
+                showToast(`${item.title} moved to add-ons`);
             };
 
             return (
@@ -328,6 +482,7 @@
                                                     pkg.id === oldItem.id ? newItem : pkg
                                                 )
                                             }));
+                                            showToast("Package updated successfully");
                                         }}
                                     />
                                 </div>
@@ -361,6 +516,70 @@
                                 />
                             </div>
                         </div>
+                    </div>
+                    {toast && <Toast message={toast} onClose={hideToast} />}
+                </div>
+            );
+        };
+
+        const App = () => {
+            const [currentStep, setCurrentStep] = React.useState("presentation");
+
+            const renderStep = () => {
+                switch (currentStep) {
+                    case "presentation":
+                        return <PresentationSlide />;
+                    case "question":
+                        return <QuestionPage />;
+                    case "packages":
+                        return <PackageSelection />;
+                    default:
+                        return null;
+                }
+            };
+
+            const handleNext = () => {
+                switch (currentStep) {
+                    case "presentation":
+                        setCurrentStep("question");
+                        break;
+                    case "question":
+                        setCurrentStep("packages");
+                        break;
+                }
+            };
+
+            const handleBack = () => {
+                switch (currentStep) {
+                    case "question":
+                        setCurrentStep("presentation");
+                        break;
+                    case "packages":
+                        setCurrentStep("question");
+                        break;
+                }
+            };
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-400">
+                    {renderStep()}
+                    <div className="fixed bottom-8 right-8 flex gap-4">
+                        {currentStep !== "presentation" && (
+                            <button 
+                                onClick={handleBack}
+                                className="bg-white hover:bg-blue-50 px-4 py-2 rounded-md"
+                            >
+                                Back
+                            </button>
+                        )}
+                        {currentStep !== "packages" && (
+                            <button 
+                                onClick={handleNext}
+                                className="bg-white text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-md"
+                            >
+                                Next
+                            </button>
+                        )}
                     </div>
                 </div>
             );
