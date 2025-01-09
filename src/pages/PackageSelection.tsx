@@ -68,7 +68,10 @@ const PackageSelection = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const packageTypes: PackageType[] = ['platinum', 'gold', 'silver'];
-  const visiblePackages = packageTypes.slice(currentIndex, currentIndex + 2);
+  const visiblePackages = [
+    packageTypes[currentIndex],
+    packageTypes[(currentIndex + 1) % packageTypes.length]
+  ];
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -113,15 +116,11 @@ const PackageSelection = () => {
   };
 
   const handleNext = () => {
-    if (currentIndex < packageTypes.length - 2) {
-      setCurrentIndex(prev => prev + 1);
-    }
+    setCurrentIndex((prev) => (prev + 1) % packageTypes.length);
   };
 
   const handlePrevious = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(prev => prev - 1);
-    }
+    setCurrentIndex((prev) => (prev - 1 + packageTypes.length) % packageTypes.length);
   };
 
   return (
@@ -132,7 +131,7 @@ const PackageSelection = () => {
           <PackageNavigation
             onPrevious={handlePrevious}
             onNext={handleNext}
-            disabled={currentIndex === packageTypes.length - 2}
+            disabled={false}
           />
         </div>
         
