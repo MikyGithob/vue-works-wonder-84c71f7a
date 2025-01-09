@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Package Selection App</title>
+    
+    <!-- React and ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- React Query -->
+    <script src="https://unpkg.com/@tanstack/react-query@latest/build/umd/index.production.js"></script>
+
+    <!-- Shadcn-like Styles -->
+    <style>
+        :root {
+            --background: 0 0% 100%;
+            --foreground: 222.2 84% 4.9%;
+            --card: 0 0% 100%;
+            --card-foreground: 222.2 84% 4.9%;
+            --popover: 0 0% 100%;
+            --popover-foreground: 222.2 84% 4.9%;
+            --primary: 222.2 47.4% 11.2%;
+            --primary-foreground: 210 40% 98%;
+            --secondary: 210 40% 96.1%;
+            --secondary-foreground: 222.2 47.4% 11.2%;
+            --muted: 210 40% 96.1%;
+            --muted-foreground: 215.4 16.3% 46.9%;
+            --accent: 210 40% 96.1%;
+            --accent-foreground: 222.2 47.4% 11.2%;
+            --destructive: 0 84.2% 60.2%;
+            --destructive-foreground: 210 40% 98%;
+            --border: 214.3 31.8% 91.4%;
+            --input: 214.3 31.8% 91.4%;
+            --ring: 222.2 84% 4.9%;
+            --radius: 0.5rem;
+        }
+
+        .btn {
+            @apply px-4 py-2 rounded-md transition-colors;
+        }
+
+        .btn-ghost {
+            @apply hover:bg-gray-100;
+        }
+
+        .card {
+            @apply bg-white rounded-lg shadow-sm border border-gray-200;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // Initial Data
+        const initialPackages = {
+            platinum: [
+                {
+                    id: 1,
+                    title: "Item Title",
+                    points: ["Bullet Point", "Bullet Point", "Bullet Point", "Bullet Point"],
+                    price: 4299.23,
+                    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                },
+                {
+                    id: 2,
+                    title: "Item Title",
+                    points: ["Bullet Point", "Bullet Point", "Bullet Point", "Bullet Point"],
+                    price: 4299.23,
+                    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                }
+            ],
+            gold: [
+                {
+                    id: 4,
+                    title: "Item Title",
+                    points: ["Bullet Point", "Bullet Point", "Bullet Point", "Bullet Point"],
+                    price: 4209.23,
+                    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                }
+            ],
+            silver: [
+                {
+                    id: 5,
+                    title: "Item Title",
+                    points: ["Bullet Point", "Bullet Point", "Bullet Point", "Bullet Point"],
+                    price: 3209.23,
+                    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                }
+            ],
+            addons: [
+                {
+                    id: 6,
+                    title: "Item Title",
+                    points: ["Bullet Point", "Bullet Point", "Bullet Point", "Bullet Point"],
+                    price: 4269.23,
+                    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                },
+                {
+                    id: 7,
+                    title: "Item Title",
+                    points: ["Bullet Point", "Bullet Point", "Bullet Point", "Bullet Point"],
+                    price: 4269.23,
+                    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                }
+            ]
+        };
+
+        // Components
+        const PackageItem = ({ pkg, onRemove, onUpdateTitle, isDraggable = true }) => {
+            const [isEditing, setIsEditing] = React.useState(false);
+            const [title, setTitle] = React.useState(pkg.title);
+
+            const handleTitleClick = () => {
+                if (onUpdateTitle) {
+                    setIsEditing(true);
+                }
+            };
+
+            const handleTitleSubmit = () => {
+                setIsEditing(false);
+                if (title !== pkg.title && onUpdateTitle) {
+                    onUpdateTitle(title);
+                }
+            };
+
+            return (
+                <div className="card p-6 mb-4 relative">
+                    {onRemove && (
+                        <button 
+                            onClick={() => onRemove(pkg)}
+                            className="absolute right-2 top-2 p-1 hover:bg-gray-100 rounded-full"
+                        >
+                            ×
+                        </button>
+                    )}
+                    {isEditing ? (
+                        <input
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            onBlur={handleTitleSubmit}
+                            className="w-full p-2 border rounded mb-2"
+                            autoFocus
+                        />
+                    ) : (
+                        <h3 
+                            className="font-bold mb-2 text-lg cursor-pointer hover:text-blue-600"
+                            onClick={handleTitleClick}
+                        >
+                            {pkg.title}
+                        </h3>
+                    )}
+                    <ul className="list-disc pl-5 mb-4 space-y-1">
+                        {pkg.points.map((point, index) => (
+                            <li key={index} className="text-sm text-gray-600">{point}</li>
+                        ))}
+                    </ul>
+                    <p className="text-sm text-gray-600 mb-4">{pkg.description}</p>
+                    <div className="flex justify-between items-center">
+                        <span className="font-bold text-lg">${pkg.price.toFixed(2)}</span>
+                        <button className={`btn ${onRemove ? 'bg-gray-100' : 'bg-blue-600 text-white'}`}>
+                            {onRemove ? 'Selected' : 'Select'}
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
+        const PaymentSummary = ({ packages, title }) => {
+            const [paymentType, setPaymentType] = React.useState("full");
+            const [monthlyTerm, setMonthlyTerm] = React.useState("48");
+            const [downPayment, setDownPayment] = React.useState("500.00");
+
+            const totalCost = packages.reduce((sum, pkg) => sum + pkg.price, 0);
+            const discount = title === "Platinum" ? 800 : title === "Gold" ? 500 : 0;
+            const finalCost = totalCost - discount;
+
+            return (
+                <div className="card mt-4 p-4">
+                    <div className="flex justify-between items-start mb-4">
+                        <select 
+                            value={paymentType}
+                            onChange={(e) => setPaymentType(e.target.value)}
+                            className="border p-2 rounded"
+                        >
+                            <option value="full">Full Payment</option>
+                            <option value="finance">Finance</option>
+                        </select>
+                        
+                        <div className="text-right text-sm">
+                            <p className="text-gray-600">Subtotal: ${totalCost.toFixed(2)}</p>
+                            <p className="text-gray-600">Discount: -${discount.toFixed(2)}</p>
+                            <p className="font-bold">Total: ${finalCost.toFixed(2)}</p>
+                        </div>
+                    </div>
+
+                    {paymentType === "finance" && (
+                        <div className="space-y-2">
+                            <select 
+                                value={monthlyTerm}
+                                onChange={(e) => setMonthlyTerm(e.target.value)}
+                                className="w-full border p-2 rounded"
+                            >
+                                <option value="48">48 Months @ 4.99%</option>
+                                <option value="36">36 Months @ 4.49%</option>
+                            </select>
+                            <div className="flex items-center gap-2">
+                                <span className="text-sm text-gray-600">Down Payment:</span>
+                                <input
+                                    type="text"
+                                    value={downPayment}
+                                    onChange={(e) => setDownPayment(e.target.value)}
+                                    className="border p-2 rounded w-32"
+                                />
+                            </div>
+                            <div className="text-sm text-gray-600">
+                                <p>Monthly: ${(finalCost / parseInt(monthlyTerm)).toFixed(2)}</p>
+                                <p className="text-xs">On Approved Credit</p>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const PackageSection = ({ title, packages, showSelect, onRemoveItem, onDrop, onUpdateItem }) => {
+            return (
+                <div className="space-y-4 w-full max-w-md bg-white/5 backdrop-blur-sm p-6 rounded-lg">
+                    {showSelect && (
+                        <select className="w-full border p-2 rounded bg-white">
+                            <option value="option1">{title} Option 1</option>
+                            <option value="option2">{title} Option 2</option>
+                        </select>
+                    )}
+                    
+                    <div 
+                        className="min-h-[400px] rounded-lg"
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={onDrop}
+                    >
+                        <div className="space-y-4 max-h-[calc(100vh-500px)] overflow-auto pr-4">
+                            {packages.map((pkg) => (
+                                <PackageItem
+                                    key={pkg.id}
+                                    pkg={pkg}
+                                    onRemove={onRemoveItem}
+                                    onUpdateTitle={(newTitle) => onUpdateItem(pkg, { ...pkg, title: newTitle })}
+                                    isDraggable={true}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                    
+                    {title !== "Add-ons" && <PaymentSummary packages={packages} title={title} />}
+                </div>
+            );
+        };
+
+        const App = () => {
+            const [packages, setPackages] = React.useState(initialPackages);
+            const [currentIndex, setCurrentIndex] = React.useState(0);
+            const [customPackages, setCustomPackages] = React.useState([]);
+
+            const packageTypes = ['platinum', 'gold', 'silver', ...customPackages];
+            const visiblePackages = [
+                packageTypes[currentIndex],
+                packageTypes[currentIndex + 1]
+            ].filter(Boolean);
+
+            const handleDrop = (e, targetSection) => {
+                e.preventDefault();
+                const item = JSON.parse(e.dataTransfer.getData("application/json"));
+                const sourceSection = Object.entries(packages).find(([_, items]) => 
+                    items.some(pkg => pkg.id === item.id)
+                )?.[0];
+
+                if (!sourceSection || sourceSection === targetSection) return;
+
+                setPackages(prev => {
+                    const newPackages = { ...prev };
+                    newPackages[sourceSection] = prev[sourceSection].filter(pkg => pkg.id !== item.id);
+                    newPackages[targetSection] = [...(prev[targetSection] || []), item];
+                    return newPackages;
+                });
+            };
+
+            const handleRemoveItem = (item, section) => {
+                setPackages(prev => {
+                    const newPackages = { ...prev };
+                    newPackages[section] = prev[section].filter(pkg => pkg.id !== item.id);
+                    newPackages.addons = [...prev.addons, item];
+                    return newPackages;
+                });
+            };
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-400 p-8">
+                    <div className="max-w-7xl mx-auto">
+                        <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-8 items-start">
+                            {visiblePackages.map((packageType) => (
+                                <div key={packageType} className="min-h-[600px]">
+                                    <h1 className="text-3xl font-bold text-white mb-4 capitalize">
+                                        {packageType} Package
+                                    </h1>
+                                    <PackageSection
+                                        title={packageType}
+                                        packages={packages[packageType]}
+                                        showSelect={true}
+                                        onRemoveItem={(pkg) => handleRemoveItem(pkg, packageType)}
+                                        onDrop={(e) => handleDrop(e, packageType)}
+                                        onUpdateItem={(oldItem, newItem) => {
+                                            setPackages(prev => ({
+                                                ...prev,
+                                                [packageType]: prev[packageType].map(pkg => 
+                                                    pkg.id === oldItem.id ? newItem : pkg
+                                                )
+                                            }));
+                                        }}
+                                    />
+                                </div>
+                            ))}
+
+                            <div className="flex flex-col gap-4 self-center">
+                                <button
+                                    onClick={() => setCurrentIndex(prev => Math.max(0, prev - 1))}
+                                    disabled={currentIndex === 0}
+                                    className="btn btn-ghost text-white"
+                                >
+                                    ←
+                                </button>
+                                <button
+                                    onClick={() => setCurrentIndex(prev => 
+                                        Math.min(packageTypes.length - 2, prev + 1)
+                                    )}
+                                    disabled={currentIndex >= packageTypes.length - 2}
+                                    className="btn btn-ghost text-white"
+                                >
+                                    →
+                                </button>
+                            </div>
+
+                            <div>
+                                <h1 className="text-3xl font-bold text-white mb-4">Add-ons</h1>
+                                <PackageSection
+                                    title="Add-ons"
+                                    packages={packages.addons}
+                                    onDrop={(e) => handleDrop(e, 'addons')}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Render the app
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
