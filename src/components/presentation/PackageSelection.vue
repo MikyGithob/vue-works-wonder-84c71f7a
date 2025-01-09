@@ -53,10 +53,10 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { useToast } from '@/hooks/use-toast';
-import PackageName from './PackageName.vue';
-import PackageSection from './PackageSection.vue';
-import EmptyPackage from './EmptyPackage.vue';
-import PackageControls from './PackageControls.vue';
+import PackageName from '../packages/PackageName.vue';
+import PackageSection from '../packages/PackageSection.vue';
+import EmptyPackage from '../packages/EmptyPackage.vue';
+import PackageControls from '../packages/PackageControls.vue';
 import type { Package } from '@/types/package';
 
 const toast = useToast();
@@ -117,9 +117,7 @@ const initialPackages = {
 };
 
 const packages = ref(initialPackages);
-
 const packageTypes = computed(() => ['platinum', 'gold', 'silver', ...customPackages.value]);
-
 const visiblePackages = computed(() => [
   packageTypes.value[currentIndex.value],
   packageTypes.value[currentIndex.value + 1]
