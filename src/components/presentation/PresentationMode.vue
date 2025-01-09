@@ -22,13 +22,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import PresentationSlide from './PresentationSlide.vue';
 import QuestionPage from './QuestionPage.vue';
 import PackageSelection from './PackageSelection.vue';
 
 type Step = 'presentation' | 'question' | 'packages';
 
+const router = useRouter();
 const currentStep = ref<Step>('presentation');
 
 const currentComponent = computed(() => {
@@ -51,6 +53,7 @@ const handleNext = () => {
       break;
     case 'question':
       currentStep.value = 'packages';
+      router.push('/packages');
       break;
   }
 };
@@ -62,6 +65,7 @@ const handleBack = () => {
       break;
     case 'packages':
       currentStep.value = 'question';
+      router.push('/');
       break;
   }
 };
