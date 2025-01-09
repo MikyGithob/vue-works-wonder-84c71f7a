@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import PackageSection from "@/components/packages/PackageSection";
 import { Package } from "@/types/package";
-import { Plus, ArrowLeft, ArrowRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, ArrowLeft, ArrowRight } from "lucide-react";
 import EmptyPackage from "@/components/packages/EmptyPackage";
 import PackageName from "@/components/packages/PackageName";
 
@@ -136,7 +136,6 @@ const PackageSelection = () => {
       [newPackageName]: []
     }));
     
-    // Calculate the new index that will show the newly added package
     const newPackageIndex = Math.max(0, packageTypes.length - 1);
     setCurrentIndex(Math.max(0, newPackageIndex - 1));
 
@@ -165,15 +164,15 @@ const PackageSelection = () => {
           <h1 className="text-3xl font-bold text-white">Package Selection</h1>
         </div>
         
-        <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr_1fr_auto_1fr] gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr_1fr_auto_1fr] gap-8 items-center">
           <Button
             variant="ghost"
             size="icon"
             onClick={handlePrevious}
             disabled={currentIndex === 0}
-            className="text-white hover:bg-white/20"
+            className="text-white hover:bg-white/20 self-center h-12 w-12"
           >
-            <ArrowLeft className="h-6 w-6" />
+            <ChevronLeft className="h-6 w-6" />
           </Button>
 
           {visiblePackages.map((packageType) => (
@@ -204,21 +203,21 @@ const PackageSelection = () => {
             </div>
           ))}
 
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 self-center">
             <Button
               variant="ghost"
               size="icon"
               onClick={handleNext}
               disabled={currentIndex >= packageTypes.length - 2}
-              className="text-white hover:bg-white/20"
+              className="text-white hover:bg-white/20 h-12 w-12"
             >
-              <ArrowRight className="h-6 w-6" />
+              <ChevronRight className="h-6 w-6" />
             </Button>
             <Button
               variant="ghost"
               size="icon"
               onClick={handleAddPackage}
-              className="text-white hover:bg-white/20"
+              className="text-white hover:bg-white/20 h-12 w-12"
             >
               <Plus className="h-6 w-6" />
             </Button>
