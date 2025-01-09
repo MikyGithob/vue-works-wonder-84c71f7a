@@ -1,6 +1,8 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-blue-600 to-blue-400">
-    <component :is="currentComponent" />
+    <presentation-slide v-if="currentStep === 'presentation'" />
+    <question-page v-if="currentStep === 'question'" />
+    <package-selection v-if="currentStep === 'packages'" />
     
     <div class="fixed bottom-8 right-8 flex gap-4">
       <button 
@@ -22,29 +24,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref } from 'vue';
 import PresentationSlide from './PresentationSlide.vue';
 import QuestionPage from './QuestionPage.vue';
 import PackageSelection from './PackageSelection.vue';
 
 type Step = 'presentation' | 'question' | 'packages';
 
-const router = useRouter();
 const currentStep = ref<Step>('presentation');
-
-const currentComponent = computed(() => {
-  switch (currentStep.value) {
-    case 'presentation':
-      return PresentationSlide;
-    case 'question':
-      return QuestionPage;
-    case 'packages':
-      return PackageSelection;
-    default:
-      return PresentationSlide;
-  }
-});
 
 const handleNext = () => {
   switch (currentStep.value) {
@@ -53,7 +40,6 @@ const handleNext = () => {
       break;
     case 'question':
       currentStep.value = 'packages';
-      router.push('/packages');
       break;
   }
 };
@@ -65,7 +51,6 @@ const handleBack = () => {
       break;
     case 'packages':
       currentStep.value = 'question';
-      router.push('/');
       break;
   }
 };
