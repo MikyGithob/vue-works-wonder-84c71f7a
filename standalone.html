@@ -15,39 +15,20 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     
     <!-- React Query -->
     <script src="https://unpkg.com/@tanstack/react-query@latest/build/umd/index.production.js"></script>
 
-    <!-- Embla Carousel -->
-    <script src="https://unpkg.com/embla-carousel/embla-carousel.umd.js"></script>
-    <script src="https://unpkg.com/embla-carousel-react/embla-carousel-react.umd.js"></script>
-
-    <!-- Shadcn-like Styles -->
+    <!-- Custom Styles -->
     <style>
         :root {
-            --background: 0 0% 100%;
-            --foreground: 222.2 84% 4.9%;
-            --card: 0 0% 100%;
-            --card-foreground: 222.2 84% 4.9%;
-            --popover: 0 0% 100%;
-            --popover-foreground: 222.2 84% 4.9%;
-            --primary: 222.2 47.4% 11.2%;
-            --primary-foreground: 210 40% 98%;
-            --secondary: 210 40% 96.1%;
-            --secondary-foreground: 222.2 47.4% 11.2%;
-            --muted: 210 40% 96.1%;
-            --muted-foreground: 215.4 16.3% 46.9%;
-            --accent: 210 40% 96.1%;
-            --accent-foreground: 222.2 47.4% 11.2%;
-            --destructive: 0 84.2% 60.2%;
-            --destructive-foreground: 210 40% 98%;
-            --border: 214.3 31.8% 91.4%;
-            --input: 214.3 31.8% 91.4%;
-            --ring: 222.2 84% 4.9%;
-            --radius: 0.5rem;
+            --primary: #9b87f5;
+            --secondary: #7E69AB;
+            --tertiary: #6E59A5;
+            --dark: #1A1F2C;
+            --light: #D6BCFA;
         }
 
         .btn {
@@ -55,84 +36,62 @@
         }
 
         .btn-ghost {
-            @apply hover:bg-gray-100;
+            @apply hover:bg-opacity-10 hover:bg-white;
         }
 
         .card {
-            @apply bg-white rounded-lg shadow-sm border border-gray-200;
+            @apply bg-white rounded-lg shadow-lg border border-gray-200 transition-all duration-300;
         }
 
-        .embla {
-            overflow: hidden;
+        .card:hover {
+            @apply shadow-xl transform -translate-y-1;
         }
-        .embla__container {
-            display: flex;
+
+        .dragging {
+            @apply opacity-50 border-2 border-dashed border-primary cursor-grabbing;
         }
-        .embla__slide {
-            flex: 0 0 100%;
-            min-width: 0;
+
+        .carousel-container {
+            @apply relative overflow-hidden rounded-lg;
+        }
+
+        .carousel-slide {
+            @apply flex transition-transform duration-300 ease-in-out;
+        }
+
+        .carousel-arrow {
+            @apply absolute top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-3 rounded-full shadow-lg z-10 transition-all duration-300;
+        }
+
+        .carousel-arrow:hover {
+            @apply scale-110;
+        }
+
+        .carousel-arrow.left {
+            @apply left-4;
+        }
+
+        .carousel-arrow.right {
+            @apply right-4;
+        }
+
+        .package-title {
+            @apply text-2xl font-bold mb-4 cursor-pointer hover:text-primary transition-colors;
+        }
+
+        .add-item-btn {
+            @apply flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-md hover:bg-opacity-90 transition-all duration-300;
+        }
+
+        .edit-input {
+            @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent;
         }
     </style>
 </head>
-<body>
+<body class="bg-gradient-to-br from-primary to-tertiary min-h-screen">
     <div id="root"></div>
 
     <script type="text/babel">
-        // Initial Data
-        const initialPackages = {
-            platinum: [
-                {
-                    id: 1,
-                    title: "Platinum Package A",
-                    points: ["Premium Feature 1", "Premium Feature 2", "Premium Feature 3", "Premium Feature 4"],
-                    price: 4299.23,
-                    description: "Our most comprehensive package with all premium features included."
-                },
-                {
-                    id: 2,
-                    title: "Platinum Package B",
-                    points: ["Premium Feature 5", "Premium Feature 6", "Premium Feature 7", "Premium Feature 8"],
-                    price: 4299.23,
-                    description: "Alternative platinum package with different premium features."
-                }
-            ],
-            gold: [
-                {
-                    id: 4,
-                    title: "Gold Package",
-                    points: ["Gold Feature 1", "Gold Feature 2", "Gold Feature 3", "Gold Feature 4"],
-                    price: 4209.23,
-                    description: "Advanced features for demanding users."
-                }
-            ],
-            silver: [
-                {
-                    id: 5,
-                    title: "Silver Package",
-                    points: ["Silver Feature 1", "Silver Feature 2", "Silver Feature 3", "Silver Feature 4"],
-                    price: 3209.23,
-                    description: "Essential features for basic needs."
-                }
-            ],
-            addons: [
-                {
-                    id: 6,
-                    title: "Premium Add-on",
-                    points: ["Add-on Feature 1", "Add-on Feature 2", "Add-on Feature 3", "Add-on Feature 4"],
-                    price: 269.23,
-                    description: "Enhance your package with premium add-ons."
-                },
-                {
-                    id: 7,
-                    title: "Basic Add-on",
-                    points: ["Basic Feature 1", "Basic Feature 2", "Basic Feature 3", "Basic Feature 4"],
-                    price: 169.23,
-                    description: "Essential add-ons for any package."
-                }
-            ]
-        };
-
-        // Toast Component
         const Toast = ({ message, onClose }) => {
             React.useEffect(() => {
                 const timer = setTimeout(onClose, 3000);
@@ -140,48 +99,20 @@
             }, [onClose]);
 
             return (
-                <div className="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg">
+                <div className="fixed bottom-4 right-4 bg-primary text-white px-6 py-3 rounded-lg shadow-lg animate-fade-in">
+                    <i className="fas fa-check-circle mr-2"></i>
                     {message}
                 </div>
             );
         };
 
-        // Custom Hooks
         const useToast = () => {
             const [toast, setToast] = React.useState(null);
-
-            const showToast = (message) => {
-                setToast(message);
+            return {
+                toast,
+                showToast: (message) => setToast(message),
+                hideToast: () => setToast(null)
             };
-
-            const hideToast = () => {
-                setToast(null);
-            };
-
-            return { toast, showToast, hideToast };
-        };
-
-        // Components
-        const PresentationSlide = () => {
-            const slideUrl = "https://www.dickinson.edu/download/downloads/id/1076/sample_powerpoint_slides.pptx";
-            
-            return (
-                <div className="p-8">
-                    <div className="max-w-4xl mx-auto aspect-video bg-white/95 shadow-lg rounded-lg">
-                        <div className="h-full flex flex-col items-center justify-center p-8">
-                            <h1 className="text-2xl text-green-500 mb-4">Sample PowerPoint Presentation</h1>
-                            <div className="w-full h-full relative">
-                                <iframe 
-                                    src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(slideUrl)}`}
-                                    className="w-full h-full border-none"
-                                    title="Presentation Slide"
-                                    allow="fullscreen"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
         };
 
         const QuestionPage = () => {
@@ -191,70 +122,96 @@
             const menuItems = [
                 {
                     id: 1,
-                    title: "Allergy-Safe Option 1",
-                    points: ["Hypoallergenic", "Allergen-free", "Safe for sensitive users", "Doctor recommended"],
+                    title: "Allergy-Safe Option",
+                    points: ["Hypoallergenic", "Allergen-free", "Safe for sensitive users"],
                     price: 458.21,
                     description: "Specially designed for users with allergies and sensitivities."
                 },
                 {
                     id: 2,
-                    title: "Allergy-Safe Option 2",
-                    points: ["Natural materials", "Chemical-free", "Eco-friendly", "Gentle formula"],
-                    price: 534.50,
-                    description: "Natural and safe alternatives for allergy sufferers."
-                },
-                {
-                    id: 3,
                     title: "Standard Option",
-                    points: ["Regular materials", "Standard formula", "Cost-effective", "Popular choice"],
-                    price: 612.75,
+                    points: ["Regular materials", "Standard formula", "Cost-effective"],
+                    price: 534.50,
                     description: "Our standard option for users without specific allergies."
                 }
             ];
 
+            const handlePrevSlide = () => {
+                setCurrentSlide(prev => Math.max(0, prev - 1));
+            };
+
+            const handleNextSlide = () => {
+                setCurrentSlide(prev => Math.min(menuItems.length - 2, prev + 1));
+            };
+
             return (
                 <div className="p-8">
                     <div className="max-w-4xl mx-auto space-y-8">
-                        <div className="bg-white p-8 rounded-lg shadow-sm">
-                            <h2 className="text-2xl text-center mb-8">Does Anyone Suffer from Allergies?</h2>
+                        <div className="bg-white p-8 rounded-lg shadow-lg">
+                            <h2 className="text-3xl text-center mb-8 text-dark font-bold">
+                                Does Anyone Suffer from Allergies?
+                            </h2>
                             
                             <div className="flex justify-center gap-4 mb-8">
                                 <button 
-                                    className={`btn ${answer === "yes" ? 'bg-blue-500 text-white' : 'bg-gray-100'}`}
+                                    className={`btn ${answer === "yes" ? 'bg-primary text-white' : 'bg-white border border-primary text-primary'}`}
                                     onClick={() => setAnswer("yes")}
                                 >
+                                    <i className="fas fa-check-circle mr-2"></i>
                                     Yes
                                 </button>
                                 <button 
-                                    className={`btn ${answer === "no" ? 'bg-blue-500 text-white' : 'bg-gray-100'}`}
+                                    className={`btn ${answer === "no" ? 'bg-primary text-white' : 'bg-white border border-primary text-primary'}`}
                                     onClick={() => setAnswer("no")}
                                 >
+                                    <i className="fas fa-times-circle mr-2"></i>
                                     No
                                 </button>
                             </div>
 
-                            <div className="embla">
-                                <div className="embla__container">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4">
+                            <div className="carousel-container">
+                                <button 
+                                    className="carousel-arrow left"
+                                    onClick={handlePrevSlide}
+                                    disabled={currentSlide === 0}
+                                >
+                                    <i className="fas fa-chevron-left"></i>
+                                </button>
+                                
+                                <div className="carousel-slide" style={{
+                                    transform: `translateX(-${currentSlide * 100}%)`
+                                }}>
+                                    <div className="grid grid-cols-2 gap-6 w-full">
                                         {menuItems.map((item) => (
-                                            <div key={item.id} className="card">
-                                                <div className="p-6">
-                                                    <h3 className="font-bold mb-2">{item.title}</h3>
-                                                    <ul className="list-disc pl-5 mb-4">
-                                                        {item.points.map((point, index) => (
-                                                            <li key={index}>{point}</li>
-                                                        ))}
-                                                    </ul>
-                                                    <p className="text-sm text-gray-600 mb-4">{item.description}</p>
-                                                    <div className="flex justify-between items-center">
-                                                        <span className="font-bold">${item.price.toFixed(2)}</span>
-                                                        <button className="btn bg-blue-500 text-white">Select</button>
-                                                    </div>
+                                            <div key={item.id} className="card p-6">
+                                                <h3 className="text-xl font-bold mb-2">{item.title}</h3>
+                                                <ul className="list-disc pl-5 mb-4">
+                                                    {item.points.map((point, index) => (
+                                                        <li key={index} className="text-gray-600">{point}</li>
+                                                    ))}
+                                                </ul>
+                                                <p className="text-sm text-gray-600 mb-4">{item.description}</p>
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-xl font-bold text-primary">
+                                                        ${item.price.toFixed(2)}
+                                                    </span>
+                                                    <button className="btn bg-primary text-white hover:bg-opacity-90">
+                                                        <i className="fas fa-shopping-cart mr-2"></i>
+                                                        Select
+                                                    </button>
                                                 </div>
                                             </div>
                                         ))}
                                     </div>
                                 </div>
+
+                                <button 
+                                    className="carousel-arrow right"
+                                    onClick={handleNextSlide}
+                                    disabled={currentSlide >= menuItems.length - 2}
+                                >
+                                    <i className="fas fa-chevron-right"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -265,6 +222,12 @@
         const PackageItem = ({ pkg, onRemove, onUpdateTitle, isDraggable = true }) => {
             const [isEditing, setIsEditing] = React.useState(false);
             const [title, setTitle] = React.useState(pkg.title);
+            const [isDragging, setIsDragging] = React.useState(false);
+
+            const handleDragStart = (e) => {
+                setIsDragging(true);
+                e.dataTransfer.setData("application/json", JSON.stringify(pkg));
+            };
 
             const handleTitleClick = () => {
                 if (onUpdateTitle) {
@@ -281,123 +244,111 @@
 
             return (
                 <div 
-                    className="card p-6 mb-4 relative"
+                    className={`card ${isDragging ? 'dragging' : ''}`}
                     draggable={isDraggable}
-                    onDragStart={(e) => {
-                        e.dataTransfer.setData("application/json", JSON.stringify(pkg));
-                    }}
+                    onDragStart={handleDragStart}
+                    onDragEnd={() => setIsDragging(false)}
                 >
-                    {onRemove && (
-                        <button 
-                            onClick={() => onRemove(pkg)}
-                            className="absolute right-2 top-2 p-1 hover:bg-gray-100 rounded-full"
-                        >
-                            ×
-                        </button>
-                    )}
-                    {isEditing ? (
-                        <input
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                            onBlur={handleTitleSubmit}
-                            className="w-full p-2 border rounded mb-2"
-                            autoFocus
-                        />
-                    ) : (
-                        <h3 
-                            className="font-bold mb-2 text-lg cursor-pointer hover:text-blue-600"
-                            onClick={handleTitleClick}
-                        >
-                            {pkg.title}
-                        </h3>
-                    )}
-                    <ul className="list-disc pl-5 mb-4 space-y-1">
-                        {pkg.points.map((point, index) => (
-                            <li key={index} className="text-sm text-gray-600">{point}</li>
-                        ))}
-                    </ul>
-                    <p className="text-sm text-gray-600 mb-4">{pkg.description}</p>
-                    <div className="flex justify-between items-center">
-                        <span className="font-bold text-lg">${pkg.price.toFixed(2)}</span>
-                        <button className={`btn ${onRemove ? 'bg-gray-100' : 'bg-blue-600 text-white'}`}>
-                            {onRemove ? 'Selected' : 'Select'}
-                        </button>
-                    </div>
-                </div>
-            );
-        };
-
-        const PaymentSummary = ({ packages, title }) => {
-            const [paymentType, setPaymentType] = React.useState("full");
-            const [monthlyTerm, setMonthlyTerm] = React.useState("48");
-            const [downPayment, setDownPayment] = React.useState("500.00");
-
-            const totalCost = packages.reduce((sum, pkg) => sum + pkg.price, 0);
-            const discount = title === "Platinum" ? 800 : title === "Gold" ? 500 : 0;
-            const finalCost = totalCost - discount;
-
-            return (
-                <div className="card mt-4 p-4">
-                    <div className="flex justify-between items-start mb-4">
-                        <select 
-                            value={paymentType}
-                            onChange={(e) => setPaymentType(e.target.value)}
-                            className="border p-2 rounded"
-                        >
-                            <option value="full">Full Payment</option>
-                            <option value="finance">Finance</option>
-                        </select>
-                        
-                        <div className="text-right text-sm">
-                            <p className="text-gray-600">Subtotal: ${totalCost.toFixed(2)}</p>
-                            <p className="text-gray-600">Discount: -${discount.toFixed(2)}</p>
-                            <p className="font-bold">Total: ${finalCost.toFixed(2)}</p>
-                        </div>
-                    </div>
-
-                    {paymentType === "finance" && (
-                        <div className="space-y-2">
-                            <select 
-                                value={monthlyTerm}
-                                onChange={(e) => setMonthlyTerm(e.target.value)}
-                                className="w-full border p-2 rounded"
+                    <div className="p-6">
+                        {onRemove && (
+                            <button 
+                                onClick={() => onRemove(pkg)}
+                                className="absolute right-2 top-2 p-2 hover:bg-gray-100 rounded-full"
                             >
-                                <option value="48">48 Months @ 4.99%</option>
-                                <option value="36">36 Months @ 4.49%</option>
-                            </select>
-                            <div className="flex items-center gap-2">
-                                <span className="text-sm text-gray-600">Down Payment:</span>
-                                <input
-                                    type="text"
-                                    value={downPayment}
-                                    onChange={(e) => setDownPayment(e.target.value)}
-                                    className="border p-2 rounded w-32"
-                                />
-                            </div>
-                            <div className="text-sm text-gray-600">
-                                <p>Monthly: ${(finalCost / parseInt(monthlyTerm)).toFixed(2)}</p>
-                                <p className="text-xs">On Approved Credit</p>
-                            </div>
+                                <i className="fas fa-times"></i>
+                            </button>
+                        )}
+                        
+                        {isEditing ? (
+                            <input
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                                onBlur={handleTitleSubmit}
+                                onKeyDown={(e) => e.key === 'Enter' && handleTitleSubmit()}
+                                className="edit-input"
+                                autoFocus
+                            />
+                        ) : (
+                            <h3 
+                                className="package-title"
+                                onClick={handleTitleClick}
+                            >
+                                {pkg.title}
+                                {onUpdateTitle && (
+                                    <i className="fas fa-edit ml-2 text-gray-400 hover:text-primary"></i>
+                                )}
+                            </h3>
+                        )}
+                        
+                        <ul className="list-disc pl-5 mb-4 space-y-1">
+                            {pkg.points.map((point, index) => (
+                                <li key={index} className="text-gray-600">{point}</li>
+                            ))}
+                        </ul>
+                        <p className="text-sm text-gray-600 mb-4">{pkg.description}</p>
+                        <div className="flex justify-between items-center">
+                            <span className="text-xl font-bold text-primary">
+                                ${pkg.price.toFixed(2)}
+                            </span>
+                            <button className={`btn ${onRemove ? 'bg-gray-100' : 'bg-primary text-white'}`}>
+                                {onRemove ? (
+                                    <>
+                                        <i className="fas fa-check mr-2"></i>
+                                        Selected
+                                    </>
+                                ) : (
+                                    <>
+                                        <i className="fas fa-shopping-cart mr-2"></i>
+                                        Select
+                                    </>
+                                )}
+                            </button>
                         </div>
-                    )}
+                    </div>
                 </div>
             );
         };
 
-        const PackageSection = ({ title, packages, showSelect, onRemoveItem, onDrop, onUpdateItem }) => {
+        const PackageSection = ({ title, packages, showSelect, onRemoveItem, onDrop, onUpdateItem, onAddItem }) => {
+            const handleDrop = (e) => {
+                e.preventDefault();
+                if (onDrop) {
+                    onDrop(e);
+                }
+            };
+
+            const handleDragOver = (e) => {
+                e.preventDefault();
+                e.currentTarget.classList.add('bg-primary/5');
+            };
+
+            const handleDragLeave = (e) => {
+                e.currentTarget.classList.remove('bg-primary/5');
+            };
+
             return (
-                <div className="space-y-4 w-full max-w-md bg-white/5 backdrop-blur-sm p-6 rounded-lg">
-                    {showSelect && (
-                        <select className="w-full border p-2 rounded bg-white">
-                            <option value="option1">{title} Option 1</option>
-                            <option value="option2">{title} Option 2</option>
-                        </select>
-                    )}
+                <div className="space-y-4 w-full max-w-md bg-white/10 backdrop-blur-sm p-6 rounded-lg">
+                    <div className="flex justify-between items-center mb-4">
+                        {showSelect && (
+                            <select className="bg-white border border-gray-300 rounded-md px-3 py-2">
+                                <option value="option1">{title} Option 1</option>
+                                <option value="option2">{title} Option 2</option>
+                            </select>
+                        )}
+                        
+                        {onAddItem && (
+                            <button onClick={onAddItem} className="add-item-btn">
+                                <i className="fas fa-plus"></i>
+                                Add Item
+                            </button>
+                        )}
+                    </div>
                     
                     <div 
-                        className="min-h-[400px] rounded-lg"
-                        onDragOver={(e) => e.preventDefault()}
-                        onDrop={onDrop}
+                        className="min-h-[400px] rounded-lg transition-all duration-300"
+                        onDrop={handleDrop}
+                        onDragOver={handleDragOver}
+                        onDragLeave={handleDragLeave}
                     >
                         <div className="space-y-4 max-h-[calc(100vh-500px)] overflow-auto pr-4">
                             {packages.map((pkg) => (
@@ -411,119 +362,13 @@
                             ))}
                         </div>
                     </div>
-                    
-                    {title !== "Add-ons" && <PaymentSummary packages={packages} title={title} />}
-                </div>
-            );
-        };
-
-        const PackageSelection = () => {
-            const { toast, showToast, hideToast } = useToast();
-            const [packages, setPackages] = React.useState(initialPackages);
-            const [currentIndex, setCurrentIndex] = React.useState(0);
-            const [customPackages, setCustomPackages] = React.useState([]);
-
-            const packageTypes = ['platinum', 'gold', 'silver', ...customPackages];
-            const visiblePackages = [
-                packageTypes[currentIndex],
-                packageTypes[currentIndex + 1]
-            ].filter(Boolean);
-
-            const handleDrop = (e, targetSection) => {
-                e.preventDefault();
-                const item = JSON.parse(e.dataTransfer.getData("application/json"));
-                const foundSection = Object.entries(packages).find(([_, items]) => 
-                    items.some(pkg => pkg.id === item.id)
-                );
-                
-                const sourceSection = foundSection ? foundSection[0] : null;
-
-                if (!sourceSection || sourceSection === targetSection) return;
-
-                setPackages(prev => {
-                    const newPackages = { ...prev };
-                    newPackages[sourceSection] = prev[sourceSection].filter(pkg => pkg.id !== item.id);
-                    newPackages[targetSection] = [...(prev[targetSection] || []), item];
-                    return newPackages;
-                });
-
-                showToast(`Moved ${item.title} to ${targetSection} package`);
-            };
-
-            const handleRemoveItem = (item, section) => {
-                setPackages(prev => {
-                    const newPackages = { ...prev };
-                    newPackages[section] = prev[section].filter(pkg => pkg.id !== item.id);
-                    newPackages.addons = [...prev.addons, item];
-                    return newPackages;
-                });
-                showToast(`${item.title} moved to add-ons`);
-            };
-
-            return (
-                <div className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-400 p-8">
-                    <div className="max-w-7xl mx-auto">
-                        <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-8 items-start">
-                            {visiblePackages.map((packageType) => (
-                                <div key={packageType} className="min-h-[600px]">
-                                    <h1 className="text-3xl font-bold text-white mb-4 capitalize">
-                                        {packageType} Package
-                                    </h1>
-                                    <PackageSection
-                                        title={packageType}
-                                        packages={packages[packageType]}
-                                        showSelect={true}
-                                        onRemoveItem={(pkg) => handleRemoveItem(pkg, packageType)}
-                                        onDrop={(e) => handleDrop(e, packageType)}
-                                        onUpdateItem={(oldItem, newItem) => {
-                                            setPackages(prev => ({
-                                                ...prev,
-                                                [packageType]: prev[packageType].map(pkg => 
-                                                    pkg.id === oldItem.id ? newItem : pkg
-                                                )
-                                            }));
-                                            showToast("Package updated successfully");
-                                        }}
-                                    />
-                                </div>
-                            ))}
-
-                            <div className="flex flex-col gap-4 self-center">
-                                <button
-                                    onClick={() => setCurrentIndex(prev => Math.max(0, prev - 1))}
-                                    disabled={currentIndex === 0}
-                                    className="btn btn-ghost text-white"
-                                >
-                                    ←
-                                </button>
-                                <button
-                                    onClick={() => setCurrentIndex(prev => 
-                                        Math.min(packageTypes.length - 2, prev + 1)
-                                    )}
-                                    disabled={currentIndex >= packageTypes.length - 2}
-                                    className="btn btn-ghost text-white"
-                                >
-                                    →
-                                </button>
-                            </div>
-
-                            <div>
-                                <h1 className="text-3xl font-bold text-white mb-4">Add-ons</h1>
-                                <PackageSection
-                                    title="Add-ons"
-                                    packages={packages.addons}
-                                    onDrop={(e) => handleDrop(e, 'addons')}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                    {toast && <Toast message={toast} onClose={hideToast} />}
                 </div>
             );
         };
 
         const App = () => {
             const [currentStep, setCurrentStep] = React.useState("presentation");
+            const { toast, showToast, hideToast } = useToast();
 
             const renderStep = () => {
                 switch (currentStep) {
@@ -532,7 +377,7 @@
                     case "question":
                         return <QuestionPage />;
                     case "packages":
-                        return <PackageSelection />;
+                        return <PackageSelection showToast={showToast} />;
                     default:
                         return null;
                 }
@@ -561,31 +406,33 @@
             };
 
             return (
-                <div className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-400">
+                <div className="min-h-screen bg-gradient-to-br from-primary to-tertiary">
                     {renderStep()}
                     <div className="fixed bottom-8 right-8 flex gap-4">
                         {currentStep !== "presentation" && (
                             <button 
                                 onClick={handleBack}
-                                className="bg-white hover:bg-blue-50 px-4 py-2 rounded-md"
+                                className="btn bg-white hover:bg-opacity-90"
                             >
+                                <i className="fas fa-arrow-left mr-2"></i>
                                 Back
                             </button>
                         )}
                         {currentStep !== "packages" && (
                             <button 
                                 onClick={handleNext}
-                                className="bg-white text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-md"
+                                className="btn bg-white text-primary hover:bg-opacity-90"
                             >
                                 Next
+                                <i className="fas fa-arrow-right ml-2"></i>
                             </button>
                         )}
                     </div>
+                    {toast && <Toast message={toast} onClose={hideToast} />}
                 </div>
             );
         };
 
-        // Render the app
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);
     </script>
