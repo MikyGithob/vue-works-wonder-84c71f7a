@@ -12,9 +12,8 @@ interface PackageSectionProps {
 
 const PackageSection = ({ title, packages, showSelect, onRemoveItem }: PackageSectionProps) => {
   return (
-    <div className="h-full">
+    <div className="h-full bg-white/5 rounded-lg p-4">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-bold text-white">{title}</h2>
         {showSelect && (
           <Select defaultValue="option1">
             <SelectTrigger className="w-[180px] bg-white">
@@ -27,7 +26,7 @@ const PackageSection = ({ title, packages, showSelect, onRemoveItem }: PackageSe
           </Select>
         )}
       </div>
-      <ScrollArea className="h-[calc(100vh-300px)] pr-4">
+      <ScrollArea className="h-[calc(100vh-400px)] pr-4">
         <div className="space-y-4">
           {packages.map((pkg) => (
             <PackageItem

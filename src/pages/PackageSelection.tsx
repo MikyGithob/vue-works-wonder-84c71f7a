@@ -5,8 +5,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import PackageSection from "@/components/packages/PackageSection";
+import PackageNavigation from "@/components/packages/PackageNavigation";
 import { Package } from "@/types/package";
 
 const initialPackages = {
@@ -70,7 +70,6 @@ const initialPackages = {
 const PackageSelection = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [currentPackage, setCurrentPackage] = useState<'platinum' | 'gold'>("platinum");
   const [packages, setPackages] = useState(initialPackages);
   const [paymentType, setPaymentType] = useState("full");
   const [monthlyTerm, setMonthlyTerm] = useState("48");
@@ -80,80 +79,87 @@ const PackageSelection = () => {
     e.preventDefault();
   };
 
-  const handleDrop = (e: React.DragEvent) => {
+  const handleDrop = (e: React.DragEvent, targetSection: 'platinum' | 'gold') => {
     e.preventDefault();
     const item: Package = JSON.parse(e.dataTransfer.getData("application/json"));
     
     setPackages(prev => {
       const newPackages = { ...prev };
-      const targetSection = currentPackage;
-      
-      // Remove from addons
       newPackages.addons = prev.addons.filter(pkg => pkg.id !== item.id);
-      
-      // Add to target section
       newPackages[targetSection] = [...prev[targetSection], item];
-      
       return newPackages;
+    });
+
+    toast({
+      title: "Package Added",
+      description: `Added ${item.title} to ${targetSection} package`,
     });
   };
 
-  const handleRemoveItem = (item: Package) => {
+  const handleRemoveItem = (item: Package, section: 'platinum' | 'gold') => {
     setPackages(prev => {
       const newPackages = { ...prev };
-      
-      // Remove from current section
-      newPackages[currentPackage] = prev[currentPackage].filter(pkg => pkg.id !== item.id);
-      
-      // Add back to addons
+      newPackages[section] = prev[section].filter(pkg => pkg.id !== item.id);
       newPackages.addons = [...prev.addons, item];
-      
       return newPackages;
+    });
+
+    toast({
+      title: "Package Removed",
+      description: `${item.title} has been moved back to add-ons`,
     });
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-400 p-8">
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <Button
-            variant="outline"
-            onClick={() => setCurrentPackage('platinum')}
-            disabled={currentPackage === 'platinum'}
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <h1 className="text-3xl font-bold text-white">
-            {currentPackage.charAt(0).toUpperCase() + currentPackage.slice(1)} Package
-          </h1>
-          <Button
-            variant="outline"
-            onClick={() => setCurrentPackage('gold')}
-            disabled={currentPackage === 'gold'}
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
           <div
             onDragOver={handleDragOver}
-            onDrop={handleDrop}
+            onDrop={(e) => handleDrop(e, 'platinum')}
           >
+            <div className="flex items-center justify-between mb-4">
+              <h1 className="text-3xl font-bold text-white">Platinum Package</h1>
+              <PackageNavigation
+                onPrevious={() => {}}
+                onNext={() => {}}
+                disabled={true}
+              />
+            </div>
             <PackageSection
-              title={currentPackage.charAt(0).toUpperCase() + currentPackage.slice(1)}
-              packages={packages[currentPackage]}
+              title="Platinum"
+              packages={packages.platinum}
               showSelect={true}
-              onRemoveItem={handleRemoveItem}
+              onRemoveItem={(pkg) => handleRemoveItem(pkg, 'platinum')}
             />
           </div>
 
-          <div>
+          <div
+            onDragOver={handleDragOver}
+            onDrop={(e) => handleDrop(e, 'gold')}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h1 className="text-3xl font-bold text-white">Gold Package</h1>
+              <PackageNavigation
+                onPrevious={() => {}}
+                onNext={() => {}}
+                disabled={true}
+              />
+            </div>
             <PackageSection
-              title="Add-ons"
-              packages={packages.addons}
+              title="Gold"
+              packages={packages.gold}
+              showSelect={true}
+              onRemoveItem={(pkg) => handleRemoveItem(pkg, 'gold')}
             />
           </div>
+        </div>
+
+        <div className="mb-8">
+          <PackageSection
+            title="Add-ons"
+            packages={packages.addons}
+          />
         </div>
 
         {/* Payment Options */}
