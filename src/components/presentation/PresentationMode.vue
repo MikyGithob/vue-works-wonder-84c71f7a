@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-blue-600 to-blue-400">
+  <div class="min-h-screen">
     <component :is="currentComponent" />
     
     <div class="fixed bottom-8 right-8 flex gap-4">
@@ -25,7 +25,6 @@
 import { ref, computed } from 'vue';
 import PresentationSlide from './PresentationSlide.vue';
 import QuestionPage from './QuestionPage.vue';
-import PackageSelection from './PackageSelection.vue';
 
 type Step = 'presentation' | 'question' | 'packages';
 
@@ -37,8 +36,6 @@ const currentComponent = computed(() => {
       return PresentationSlide;
     case 'question':
       return QuestionPage;
-    case 'packages':
-      return PackageSelection;
     default:
       return PresentationSlide;
   }
