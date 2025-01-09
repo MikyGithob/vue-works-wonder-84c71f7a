@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { Package } from "@/types/package";
 import PaymentSummary from "./PaymentSummary";
+import { MoveHorizontal } from "lucide-react";
 
 interface EmptyPackageProps {
   onNameChange: (name: string) => void;
@@ -24,10 +25,14 @@ const EmptyPackage = ({ onNameChange }: EmptyPackageProps) => {
         className="font-bold text-lg"
         placeholder="Package Name"
       />
-      <Card className="h-[400px] flex items-center justify-center">
-        <CardContent className="text-center text-gray-500">
-          <p>Drag and drop items here</p>
-          <p className="text-sm">or select from add-ons</p>
+      <Card className="h-[400px] flex items-center justify-center bg-sidebar-accent/5">
+        <CardContent className="text-center text-muted-foreground flex flex-col items-center gap-4">
+          <MoveHorizontal className="h-12 w-12 text-muted-foreground/50" />
+          <div>
+            <p className="text-lg font-medium mb-2">This package is empty</p>
+            <p className="text-sm">Drag items from other packages or add-ons</p>
+            <p className="text-sm text-muted-foreground/70">to start building your package</p>
+          </div>
         </CardContent>
       </Card>
       <PaymentSummary packages={[]} title="Custom" />
