@@ -8,7 +8,8 @@ import { ChevronLeft } from "lucide-react";
 import EmptyPackage from "@/components/packages/EmptyPackage";
 import PackageName from "@/components/packages/PackageName";
 import PackageControls from "@/components/packages/PackageControls";
-import { PackageType } from "@/types/package-types";
+
+type PackageType = 'platinum' | 'gold' | 'silver' | string;
 
 const initialPackages = {
   platinum: [
