@@ -10,15 +10,22 @@ export const useDragAndDrop = () => {
     setIsDragging(true);
     e.dataTransfer.setData("application/json", JSON.stringify(item));
     
-    // Create a custom drag image
+    // Create a custom drag image that matches the card width
     const dragImage = document.createElement("div");
-    dragImage.className = "bg-white rounded-lg shadow-lg p-4 border-2 border-primary/20";
+    dragImage.className = "bg-white rounded-lg shadow-lg p-4 max-w-[350px]";
     dragImage.innerHTML = `
-      <div class="font-medium text-sm">${item.title}</div>
-      <div class="text-xs text-muted-foreground">$${item.price.toFixed(2)}</div>
+      <div class="font-medium">${item.title}</div>
+      <div class="text-sm text-gray-500">$${item.price.toFixed(2)}</div>
     `;
+    
+    // Add the drag image to the DOM temporarily
+    dragImage.style.position = 'absolute';
+    dragImage.style.top = '-1000px';
+    dragImage.style.opacity = '0.9';
     document.body.appendChild(dragImage);
-    e.dataTransfer.setDragImage(dragImage, 0, 0);
+    
+    // Set the drag image
+    e.dataTransfer.setDragImage(dragImage, 20, 20);
     
     // Clean up the drag image after dragging
     requestAnimationFrame(() => {

@@ -20,9 +20,9 @@ const PackageItem = ({ pkg, onRemove, isDraggable = true }: PackageItemProps) =>
       onDragStart={(e) => handleDragStart(e, pkg)}
       onDragEnd={handleDragEnd}
       className={cn(
-        "relative mb-4 last:mb-0 transition-all duration-200",
+        "relative mb-4 last:mb-0 transition-all duration-200 w-full",
         isDraggable && "cursor-grab active:cursor-grabbing hover:shadow-md",
-        isDragging && "opacity-50 ring-2 ring-primary/50"
+        isDragging && "opacity-50"
       )}
     >
       {onRemove && (
