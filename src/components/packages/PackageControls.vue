@@ -1,29 +1,34 @@
 <template>
-  <div class="flex flex-col gap-4 justify-center">
-    <button
-      @click="onPrevious"
+  <div class="flex flex-col gap-4">
+    <button 
+      @click="$emit('onPrevious')" 
       :disabled="!canGoPrevious"
-      class="p-2 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
+      class="control-button"
+      :class="{ 'opacity-50 cursor-not-allowed': !canGoPrevious }"
     >
       ←
     </button>
-    <button
-      @click="onNext"
+    
+    <button 
+      @click="$emit('onNext')" 
       :disabled="!canGoNext"
-      class="p-2 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
+      class="control-button"
+      :class="{ 'opacity-50 cursor-not-allowed': !canGoNext }"
     >
       →
     </button>
-    <button
-      @click="onAdd"
-      class="p-2 rounded-full bg-white/10 hover:bg-white/20"
+    
+    <button 
+      @click="$emit('onAdd')"
+      class="control-button"
     >
       +
     </button>
-    <button
+    
+    <button 
       v-if="showDelete"
-      @click="onDelete"
-      class="p-2 rounded-full bg-red-500/10 hover:bg-red-500/20"
+      @click="$emit('onDelete')"
+      class="control-button delete"
     >
       ×
     </button>
@@ -32,12 +37,26 @@
 
 <script setup lang="ts">
 defineProps<{
-  onPrevious: () => void;
-  onNext: () => void;
-  onAdd: () => void;
-  onDelete: () => void;
   canGoPrevious: boolean;
   canGoNext: boolean;
   showDelete: boolean;
 }>();
+
+defineEmits<{
+  (e: 'onPrevious'): void;
+  (e: 'onNext'): void;
+  (e: 'onAdd'): void;
+  (e: 'onDelete'): void;
+}>();
 </script>
+
+<style scoped>
+.control-button {
+  @apply w-12 h-12 rounded-full bg-white/10 text-white flex items-center justify-center text-xl
+         hover:bg-white/20 transition-colors;
+}
+
+.control-button.delete:hover {
+  @apply bg-red-500/20;
+}
+</style>

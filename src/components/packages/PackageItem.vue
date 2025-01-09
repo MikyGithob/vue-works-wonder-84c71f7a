@@ -2,40 +2,44 @@
   <div 
     class="package-item"
     :draggable="true"
-    @dragstart="$emit('dragstart', $event)"
+    @dragstart="handleDragStart"
   >
-    <div class="header">
+    <div class="flex justify-between items-start mb-4">
       <input
         v-if="isEditing"
-        ref="titleInput"
         v-model="editedTitle"
         @blur="handleTitleBlur"
         @keydown.enter="handleTitleBlur"
-        class="title-input"
+        class="text-lg font-bold bg-white/10 border border-white/20 rounded px-2 py-1 text-white w-full mr-2"
       />
       <h3 
         v-else
         @click="startEditing"
-        class="title"
+        class="text-lg font-bold text-white cursor-pointer hover:text-white/80"
       >
         {{ pkg.title }}
       </h3>
       <button 
         @click="$emit('remove')"
-        class="remove-button"
+        class="text-white/50 hover:text-white"
       >
         ×
       </button>
     </div>
     
-    <ul class="points">
+    <ul class="list-disc list-inside mb-4 text-white/80 space-y-1">
       <li v-for="(point, index) in pkg.points" :key="index">
         {{ point }}
       </li>
     </ul>
     
-    <p class="description">{{ pkg.description }}</p>
-    <p class="price">${{ pkg.price.toFixed(2) }}</p>
+    <p class="text-sm text-white/60 mb-4">{{ pkg.description }}</p>
+    <div class="flex justify-between items-center">
+      <p class="text-lg font-bold text-white">${{ pkg.price.toFixed(2) }}</p>
+      <button class="px-4 py-2 bg-white/10 text-white rounded hover:bg-white/20">
+        Select
+      </button>
+    </div>
   </div>
 </template>
 
@@ -50,18 +54,13 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'remove'): void;
   (e: 'update:title', value: string): void;
-  (e: 'dragstart', event: DragEvent): void;
 }>();
 
 const isEditing = ref(false);
 const editedTitle = ref(props.pkg.title);
-const titleInput = ref<HTMLInputElement | null>(null);
 
 const startEditing = () => {
   isEditing.value = true;
-  nextTick(() => {
-    titleInput.value?.focus();
-  });
 };
 
 const handleTitleBlur = () => {
@@ -70,69 +69,16 @@ const handleTitleBlur = () => {
     emit('update:title', editedTitle.value);
   }
 };
+
+const handleDragStart = (event: DragEvent) => {
+  if (event.dataTransfer) {
+    event.dataTransfer.setData('application/json', JSON.stringify(props.pkg));
+  }
+};
 </script>
 
 <style scoped>
 .package-item {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 0.5rem;
-  padding: 1rem;
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.title {
-  font-size: 1.125rem;
-  font-weight: 500;
-  color: white;
-  cursor: pointer;
-}
-
-.title-input {
-  font-size: 1.125rem;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 0.25rem;
-  padding: 0.25rem 0.5rem;
-  color: white;
-  width: 200px;
-}
-
-.remove-button {
-  background: transparent;
-  border: none;
-  color: rgba(255, 255, 255, 0.5);
-  cursor: pointer;
-  font-size: 1.25rem;
-  padding: 0.25rem;
-  line-height: 1;
-}
-
-.remove-button:hover {
-  color: white;
-}
-
-.points {
-  list-style-type: disc;
-  padding-left: 1.5rem;
-  margin-bottom: 1rem;
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.description {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.875rem;
-  margin-bottom: 1rem;
-}
-
-.price {
-  color: white;
-  font-weight: 500;
-  font-size: 1.25rem;
+  @apply bg-white/5 backdrop-blur-sm rounded-lg p-6 transition-all hover:bg-white/10;
 }
 </style>
