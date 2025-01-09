@@ -1,7 +1,9 @@
 <template>
   <div class="min-h-screen flex items-center justify-center p-8">
     <div class="max-w-4xl mx-auto bg-white/10 backdrop-blur-md rounded-lg p-8">
-      <h2 class="text-4xl font-bold text-white text-center mb-12">Help Us Understand Your Needs</h2>
+      <h2 class="text-4xl font-bold text-white text-center mb-12 animate-fade-in">
+        Help Us Understand Your Needs
+      </h2>
       
       <div class="space-y-12">
         <div v-for="(question, index) in questions" :key="index" class="space-y-6">
@@ -12,7 +14,7 @@
               :key="option"
               @click="selectOption(index, option)"
               :class="[
-                'px-6 py-3 rounded-lg transition-colors',
+                'px-6 py-3 rounded-lg transition-colors animate-fade-in',
                 selectedAnswers[index] === option
                   ? 'bg-white text-blue-600'
                   : 'bg-white/10 text-white hover:bg-white/20'
