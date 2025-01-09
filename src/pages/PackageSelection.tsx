@@ -3,8 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import PackageSection from "@/components/packages/PackageSection";
-import PackageNavigation from "@/components/packages/PackageNavigation";
 import { Package } from "@/types/package";
+import { Plus, ArrowLeft, ArrowRight } from "lucide-react";
+import EmptyPackage from "@/components/packages/EmptyPackage";
 
 const initialPackages = {
   platinum: [
@@ -59,19 +60,20 @@ const initialPackages = {
   ]
 };
 
-type PackageType = 'platinum' | 'gold' | 'silver';
+type PackageType = 'platinum' | 'gold' | 'silver' | string;
 
 const PackageSelection = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [packages, setPackages] = useState(initialPackages);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [customPackages, setCustomPackages] = useState<string[]>([]);
 
-  const packageTypes: PackageType[] = ['platinum', 'gold', 'silver'];
+  const packageTypes: PackageType[] = ['platinum', 'gold', 'silver', ...customPackages];
   const visiblePackages = [
     packageTypes[currentIndex],
-    packageTypes[(currentIndex + 1) % packageTypes.length]
-  ];
+    packageTypes[currentIndex + 1]
+  ].filter(Boolean);
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -89,7 +91,7 @@ const PackageSelection = () => {
     setPackages(prev => {
       const newPackages = { ...prev };
       newPackages[sourceSection] = prev[sourceSection].filter(pkg => pkg.id !== item.id);
-      newPackages[targetSection] = [...prev[targetSection], item];
+      newPackages[targetSection] = [...(prev[targetSection] || []), item];
       return newPackages;
     });
 
@@ -125,6 +127,27 @@ const PackageSelection = () => {
     }
   };
 
+  const handleAddPackage = () => {
+    const newPackageName = `custom-${customPackages.length + 1}`;
+    setCustomPackages(prev => [...prev, newPackageName]);
+    setPackages(prev => ({
+      ...prev,
+      [newPackageName]: []
+    }));
+  };
+
+  const handlePackageNameChange = (oldName: string, newName: string) => {
+    setCustomPackages(prev => 
+      prev.map(name => name === oldName ? newName : name)
+    );
+    setPackages(prev => {
+      const newPackages = { ...prev };
+      newPackages[newName] = prev[oldName];
+      delete newPackages[oldName];
+      return newPackages;
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-400 p-8">
       <div className="max-w-7xl mx-auto">
@@ -132,37 +155,62 @@ const PackageSelection = () => {
           <h1 className="text-3xl font-bold text-white">Package Selection</h1>
         </div>
         
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="flex items-center">
-            <PackageNavigation
-              onPrevious={handlePrevious}
-              onNext={handleNext}
-              disabled={currentIndex === 0}
-            />
-          </div>
+        <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr_1fr_auto_1fr] gap-8 items-start">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handlePrevious}
+            disabled={currentIndex === 0}
+            className="text-white hover:bg-white/20"
+          >
+            <ArrowLeft className="h-6 w-6" />
+          </Button>
 
           {visiblePackages.map((packageType) => (
             <div
               key={packageType}
               onDragOver={handleDragOver}
               onDrop={(e) => handleDrop(e, packageType)}
+              className="min-h-[600px]"
             >
-              <h1 className="text-3xl font-bold text-white mb-4 capitalize">{packageType} Package</h1>
-              <PackageSection
-                title={packageType}
-                packages={packages[packageType]}
-                showSelect={true}
-                onRemoveItem={(pkg) => handleRemoveItem(pkg, packageType)}
-              />
+              {packages[packageType] ? (
+                <>
+                  <h1 className="text-3xl font-bold text-white mb-4 capitalize">
+                    {packageType} Package
+                  </h1>
+                  <PackageSection
+                    title={packageType}
+                    packages={packages[packageType]}
+                    showSelect={true}
+                    onRemoveItem={(pkg) => handleRemoveItem(pkg, packageType)}
+                  />
+                </>
+              ) : (
+                <EmptyPackage 
+                  onNameChange={(newName) => handlePackageNameChange(packageType, newName)} 
+                />
+              )}
             </div>
           ))}
 
-          <div className="flex items-center">
-            <PackageNavigation
-              onPrevious={handlePrevious}
-              onNext={handleNext}
-              disabled={currentIndex === packageTypes.length - 2}
-            />
+          <div className="flex flex-col gap-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleNext}
+              disabled={currentIndex >= packageTypes.length - 2}
+              className="text-white hover:bg-white/20"
+            >
+              <ArrowRight className="h-6 w-6" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleAddPackage}
+              className="text-white hover:bg-white/20"
+            >
+              <Plus className="h-6 w-6" />
+            </Button>
           </div>
 
           <div>
