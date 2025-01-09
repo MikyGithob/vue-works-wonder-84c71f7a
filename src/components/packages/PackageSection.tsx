@@ -2,6 +2,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import PackageItem from "./PackageItem";
 import { Package } from "@/types/package";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import PaymentSummary from "./PaymentSummary";
+import { useState } from "react";
 
 interface PackageSectionProps {
   title: string;
@@ -11,8 +13,28 @@ interface PackageSectionProps {
 }
 
 const PackageSection = ({ title, packages, showSelect, onRemoveItem }: PackageSectionProps) => {
+  const [isDraggingOver, setIsDraggingOver] = useState(false);
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDraggingOver(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDraggingOver(false);
+  };
+
   return (
-    <div className="h-full bg-white/5 rounded-lg p-4">
+    <div 
+      className={`h-full rounded-lg p-4 transition-all duration-200 ${
+        isDraggingOver 
+          ? 'bg-sidebar-accent border-2 border-dashed border-primary' 
+          : 'bg-white/5'
+      }`}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={() => setIsDraggingOver(false)}
+    >
       <div className="flex items-center justify-between mb-4">
         {showSelect && (
           <Select defaultValue="option1">
@@ -26,7 +48,7 @@ const PackageSection = ({ title, packages, showSelect, onRemoveItem }: PackageSe
           </Select>
         )}
       </div>
-      <ScrollArea className="h-[calc(100vh-400px)] pr-4">
+      <ScrollArea className="h-[calc(100vh-500px)] pr-4">
         <div className="space-y-4">
           {packages.map((pkg) => (
             <PackageItem
@@ -38,6 +60,7 @@ const PackageSection = ({ title, packages, showSelect, onRemoveItem }: PackageSe
           ))}
         </div>
       </ScrollArea>
+      {title !== "Add-ons" && <PaymentSummary packages={packages} title={title} />}
     </div>
   );
 };
