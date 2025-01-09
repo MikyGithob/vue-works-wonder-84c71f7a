@@ -4,9 +4,11 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import PackageSection from "@/components/packages/PackageSection";
 import { Package } from "@/types/package";
+import { ChevronLeft } from "lucide-react";
 import EmptyPackage from "@/components/packages/EmptyPackage";
 import PackageName from "@/components/packages/PackageName";
 import PackageControls from "@/components/packages/PackageControls";
+import { PackageType } from "@/types/package-types";
 
 const initialPackages = {
   platinum: [

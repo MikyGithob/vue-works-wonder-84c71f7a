@@ -1,0 +1,1 @@
+export type PackageType = 'platinum' | 'gold' | 'silver' | string;
