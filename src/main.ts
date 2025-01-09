@@ -9,6 +9,10 @@ const router = createRouter({
     {
       path: '/',
       component: () => import('./components/presentation/PresentationMode.vue')
+    },
+    {
+      path: '/packages',
+      component: () => import('./components/presentation/PackageSelection.vue')
     }
   ]
 })

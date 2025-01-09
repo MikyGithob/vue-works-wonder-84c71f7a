@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import PresentationSlide from './PresentationSlide.vue';
 import QuestionPage from './QuestionPage.vue';
 import PackageSelection from './PackageSelection.vue';
