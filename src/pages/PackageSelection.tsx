@@ -129,12 +129,21 @@ const PackageSelection = () => {
   };
 
   const handleAddPackage = () => {
-    const newPackageName = `custom-${customPackages.length + 1}`;
+    const newPackageName = `New Package`;
     setCustomPackages(prev => [...prev, newPackageName]);
     setPackages(prev => ({
       ...prev,
       [newPackageName]: []
     }));
+    
+    // Calculate the new index that will show the newly added package
+    const newPackageIndex = Math.max(0, packageTypes.length - 1);
+    setCurrentIndex(Math.max(0, newPackageIndex - 1));
+
+    toast({
+      title: "Package Added",
+      description: "A new package has been created",
+    });
   };
 
   const handlePackageNameChange = (oldName: string, newName: string) => {
