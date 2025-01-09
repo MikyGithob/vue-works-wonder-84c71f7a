@@ -8,14 +8,14 @@
       <button 
         v-if="currentStep !== 'presentation'"
         @click="handleBack"
-        class="px-4 py-2 bg-white rounded-md hover:bg-blue-50 animate-fade-in"
+        class="px-4 py-2 bg-white rounded-md hover:bg-blue-50"
       >
         Back
       </button>
       <button 
         v-if="currentStep !== 'packages'"
         @click="handleNext"
-        class="px-4 py-2 bg-white text-blue-600 rounded-md hover:bg-blue-50 animate-fade-in"
+        class="px-4 py-2 bg-white text-blue-600 rounded-md hover:bg-blue-50"
       >
         Next
       </button>
