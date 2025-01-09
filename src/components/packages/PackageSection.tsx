@@ -3,9 +3,9 @@ import PackageItem from "./PackageItem";
 import { Package } from "@/types/package";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import PaymentSummary from "./PaymentSummary";
-import { useState } from "react";
-import { MoveHorizontal } from "lucide-react";
+import PackageDropZone from "./PackageDropZone";
 import { Card, CardContent } from "@/components/ui/card";
+import { MoveHorizontal } from "lucide-react";
 
 interface PackageSectionProps {
   title: string;
@@ -21,41 +21,14 @@ const PackageSection = ({
   packages, 
   showSelect, 
   onRemoveItem,
-  onDragOver,
   onDrop 
 }: PackageSectionProps) => {
-  const [isDraggingOver, setIsDraggingOver] = useState(false);
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDraggingOver(true);
-    onDragOver?.(e);
-  };
-
-  const handleDragLeave = () => {
-    setIsDraggingOver(false);
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    setIsDraggingOver(false);
-    onDrop?.(e);
-  };
-
   return (
-    <div 
-      className={`h-full rounded-lg p-4 transition-all duration-200 ${
-        isDraggingOver 
-          ? 'bg-sidebar-accent border-2 border-dashed border-primary' 
-          : 'bg-white/5'
-      }`}
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
-    >
+    <div className="space-y-4">
       <div className="flex items-center justify-between mb-4">
         {showSelect && (
           <Select defaultValue="option1">
-            <SelectTrigger className="w-[180px] bg-white">
+            <SelectTrigger className="w-[180px] bg-background">
               <SelectValue placeholder={`${title} Option 1`} />
             </SelectTrigger>
             <SelectContent>
@@ -65,31 +38,35 @@ const PackageSection = ({
           </Select>
         )}
       </div>
-      <ScrollArea className="h-[calc(100vh-500px)] pr-4">
-        {packages.length === 0 ? (
-          <Card className="h-[400px] flex items-center justify-center bg-sidebar-accent/5">
-            <CardContent className="text-center text-muted-foreground flex flex-col items-center gap-4">
-              <MoveHorizontal className="h-12 w-12 text-muted-foreground/50" />
-              <div>
-                <p className="text-lg font-medium mb-2">This package is empty</p>
-                <p className="text-sm">Drag items from other packages or add-ons</p>
-                <p className="text-sm text-muted-foreground/70">to start building your package</p>
-              </div>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="space-y-4">
-            {packages.map((pkg) => (
-              <PackageItem
-                key={pkg.id}
-                pkg={pkg}
-                onRemove={onRemoveItem}
-                isDraggable={true}
-              />
-            ))}
-          </div>
-        )}
-      </ScrollArea>
+      
+      <PackageDropZone onDrop={onDrop} isEmpty={packages.length === 0}>
+        <ScrollArea className="h-[calc(100vh-500px)] pr-4">
+          {packages.length === 0 ? (
+            <Card className="h-[400px] flex items-center justify-center bg-transparent border-none">
+              <CardContent className="text-center text-muted-foreground flex flex-col items-center gap-4">
+                <MoveHorizontal className="h-12 w-12 text-muted-foreground/50" />
+                <div>
+                  <p className="text-lg font-medium mb-2">This package is empty</p>
+                  <p className="text-sm">Drag items from other packages or add-ons</p>
+                  <p className="text-sm text-muted-foreground/70">to start building your package</p>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-4">
+              {packages.map((pkg) => (
+                <PackageItem
+                  key={pkg.id}
+                  pkg={pkg}
+                  onRemove={onRemoveItem}
+                  isDraggable={true}
+                />
+              ))}
+            </div>
+          )}
+        </ScrollArea>
+      </PackageDropZone>
+      
       {title !== "Add-ons" && <PaymentSummary packages={packages} title={title} />}
     </div>
   );
