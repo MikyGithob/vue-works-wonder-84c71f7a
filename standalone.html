@@ -281,9 +281,11 @@
             const handleDrop = (e, targetSection) => {
                 e.preventDefault();
                 const item = JSON.parse(e.dataTransfer.getData("application/json"));
-                const sourceSection = Object.entries(packages).find(([_, items]) => 
+                const foundSection = Object.entries(packages).find(([_, items]) => 
                     items.some(pkg => pkg.id === item.id)
-                )?.[0];
+                );
+                
+                const sourceSection = foundSection ? foundSection[0] : null;
 
                 if (!sourceSection || sourceSection === targetSection) return;
 
