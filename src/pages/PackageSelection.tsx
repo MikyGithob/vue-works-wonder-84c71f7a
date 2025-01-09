@@ -4,9 +4,9 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import PackageSection from "@/components/packages/PackageSection";
 import { Package } from "@/types/package";
-import { ChevronLeft, ChevronRight, Plus, ArrowLeft, ArrowRight } from "lucide-react";
 import EmptyPackage from "@/components/packages/EmptyPackage";
 import PackageName from "@/components/packages/PackageName";
+import PackageControls from "@/components/packages/PackageControls";
 
 const initialPackages = {
   platinum: [
@@ -60,8 +60,6 @@ const initialPackages = {
     }
   ]
 };
-
-type PackageType = 'platinum' | 'gold' | 'silver' | string;
 
 const PackageSelection = () => {
   const navigate = useNavigate();
@@ -145,6 +143,25 @@ const PackageSelection = () => {
     });
   };
 
+  const handleDeletePackage = () => {
+    const currentPackage = visiblePackages[0];
+    if (!currentPackage || ['platinum', 'gold', 'silver'].includes(currentPackage)) {
+      return;
+    }
+
+    setCustomPackages(prev => prev.filter(name => name !== currentPackage));
+    setPackages(prev => {
+      const newPackages = { ...prev };
+      delete newPackages[currentPackage];
+      return newPackages;
+    });
+
+    toast({
+      title: "Package Deleted",
+      description: "The package has been removed",
+    });
+  };
+
   const handlePackageNameChange = (oldName: string, newName: string) => {
     setCustomPackages(prev => 
       prev.map(name => name === oldName ? newName : name)
@@ -164,7 +181,7 @@ const PackageSelection = () => {
           <h1 className="text-3xl font-bold text-white">Package Selection</h1>
         </div>
         
-        <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr_1fr_auto_1fr] gap-8 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr_1fr_auto_1fr] gap-8 items-start">
           <Button
             variant="ghost"
             size="icon"
@@ -203,25 +220,15 @@ const PackageSelection = () => {
             </div>
           ))}
 
-          <div className="flex flex-col gap-4 self-center">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleNext}
-              disabled={currentIndex >= packageTypes.length - 2}
-              className="text-white hover:bg-white/20 h-12 w-12"
-            >
-              <ChevronRight className="h-6 w-6" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleAddPackage}
-              className="text-white hover:bg-white/20 h-12 w-12"
-            >
-              <Plus className="h-6 w-6" />
-            </Button>
-          </div>
+          <PackageControls
+            onPrevious={handlePrevious}
+            onNext={handleNext}
+            onAdd={handleAddPackage}
+            onDelete={handleDeletePackage}
+            canGoPrevious={currentIndex > 0}
+            canGoNext={currentIndex < packageTypes.length - 2}
+            showDelete={visiblePackages[0] && !['platinum', 'gold', 'silver'].includes(visiblePackages[0])}
+          />
 
           <div>
             <h1 className="text-3xl font-bold text-white mb-4">Add-ons</h1>
