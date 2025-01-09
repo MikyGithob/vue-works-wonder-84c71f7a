@@ -4,6 +4,8 @@ import { Package } from "@/types/package";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import PaymentSummary from "./PaymentSummary";
 import { useState } from "react";
+import { MoveHorizontal } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface PackageSectionProps {
   title: string;
@@ -64,16 +66,29 @@ const PackageSection = ({
         )}
       </div>
       <ScrollArea className="h-[calc(100vh-500px)] pr-4">
-        <div className="space-y-4">
-          {packages.map((pkg) => (
-            <PackageItem
-              key={pkg.id}
-              pkg={pkg}
-              onRemove={onRemoveItem}
-              isDraggable={true}
-            />
-          ))}
-        </div>
+        {packages.length === 0 ? (
+          <Card className="h-[400px] flex items-center justify-center bg-sidebar-accent/5">
+            <CardContent className="text-center text-muted-foreground flex flex-col items-center gap-4">
+              <MoveHorizontal className="h-12 w-12 text-muted-foreground/50" />
+              <div>
+                <p className="text-lg font-medium mb-2">This package is empty</p>
+                <p className="text-sm">Drag items from other packages or add-ons</p>
+                <p className="text-sm text-muted-foreground/70">to start building your package</p>
+              </div>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="space-y-4">
+            {packages.map((pkg) => (
+              <PackageItem
+                key={pkg.id}
+                pkg={pkg}
+                onRemove={onRemoveItem}
+                isDraggable={true}
+              />
+            ))}
+          </div>
+        )}
       </ScrollArea>
       {title !== "Add-ons" && <PaymentSummary packages={packages} title={title} />}
     </div>
