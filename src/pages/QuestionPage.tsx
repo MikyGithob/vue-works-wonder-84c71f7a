@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
@@ -30,19 +29,14 @@ const menuItems: MenuItem[] = [
 ];
 
 const QuestionPage = () => {
-  const navigate = useNavigate();
   const [answer, setAnswer] = useState<string | null>(null);
 
   const handleAnswer = (value: string) => {
     setAnswer(value);
   };
 
-  const handleNext = () => {
-    navigate("/packages");
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-400 p-8">
+    <div className="p-8">
       <div className="max-w-4xl mx-auto space-y-8">
         <Card className="p-8">
           <h2 className="text-2xl text-center mb-8">Does Anyone Suffer from Allergies?</h2>
@@ -88,21 +82,6 @@ const QuestionPage = () => {
             <CarouselNext />
           </Carousel>
         </Card>
-
-        <div className="flex justify-between">
-          <Button 
-            variant="outline"
-            onClick={() => navigate("/")}
-          >
-            Back
-          </Button>
-          <Button 
-            onClick={handleNext}
-            disabled={!answer}
-          >
-            Next
-          </Button>
-        </div>
       </div>
     </div>
   );
