@@ -5,15 +5,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import PaymentSummary from "./PaymentSummary";
 import PackageDropZone from "./PackageDropZone";
 import { Card, CardContent } from "@/components/ui/card";
-import { MoveHorizontal } from "lucide-react";
+import { MoveHorizontal, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 interface PackageSectionProps {
   title: string;
   packages: Package[];
   showSelect?: boolean;
   onRemoveItem?: (pkg: Package) => void;
-  onDragOver?: (e: React.DragEvent) => void;
   onDrop?: (e: React.DragEvent) => void;
+  onUpdateItem?: (oldItem: Package, newItem: Package) => void;
+  onAddItem?: () => void;
 }
 
 const PackageSection = ({ 
@@ -21,8 +24,22 @@ const PackageSection = ({
   packages, 
   showSelect, 
   onRemoveItem,
-  onDrop 
+  onDrop,
+  onUpdateItem,
+  onAddItem
 }: PackageSectionProps) => {
+  const { toast } = useToast();
+
+  const handleUpdateItem = (oldItem: Package, newTitle: string) => {
+    if (onUpdateItem) {
+      onUpdateItem(oldItem, { ...oldItem, title: newTitle });
+      toast({
+        title: "Item Updated",
+        description: "The item name has been updated successfully",
+      });
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between mb-4">
@@ -36,6 +53,16 @@ const PackageSection = ({
               <SelectItem value="option2">{title} Option 2</SelectItem>
             </SelectContent>
           </Select>
+        )}
+        {title === "Add-ons" && onAddItem && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onAddItem}
+            className="gap-2"
+          >
+            <Plus className="h-4 w-4" /> Add Item
+          </Button>
         )}
       </div>
       
@@ -59,6 +86,7 @@ const PackageSection = ({
                   key={pkg.id}
                   pkg={pkg}
                   onRemove={onRemoveItem}
+                  onUpdateTitle={(newTitle) => handleUpdateItem(pkg, newTitle)}
                   isDraggable={true}
                 />
               ))}

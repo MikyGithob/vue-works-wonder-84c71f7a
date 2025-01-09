@@ -71,6 +71,35 @@ const PackageSelection = () => {
     packageTypes[currentIndex + 1]
   ].filter(Boolean);
 
+  const handleUpdateItem = (oldItem: Package, newItem: Package, section: string) => {
+    setPackages(prev => ({
+      ...prev,
+      [section]: prev[section].map(pkg => 
+        pkg.id === oldItem.id ? newItem : pkg
+      )
+    }));
+  };
+
+  const handleAddAddonItem = () => {
+    const newItem: Package = {
+      id: Date.now(),
+      title: "New Add-on",
+      points: ["New feature", "Customizable"],
+      price: 99.99,
+      description: "Description of the new add-on"
+    };
+
+    setPackages(prev => ({
+      ...prev,
+      addons: [...prev.addons, newItem]
+    }));
+
+    toast({
+      title: "Add-on Created",
+      description: "A new add-on item has been created",
+    });
+  };
+
   const handleDrop = (e: React.DragEvent, targetSection: string) => {
     e.preventDefault();
     const item: Package = JSON.parse(e.dataTransfer.getData("application/json"));
@@ -188,6 +217,7 @@ const PackageSelection = () => {
                     showSelect={true}
                     onRemoveItem={(pkg) => handleRemoveItem(pkg, packageType)}
                     onDrop={(e) => handleDrop(e, packageType)}
+                    onUpdateItem={(oldItem, newItem) => handleUpdateItem(oldItem, newItem, packageType)}
                   />
                 </>
               ) : (
@@ -214,6 +244,8 @@ const PackageSelection = () => {
               title="Add-ons"
               packages={packages.addons}
               onDrop={(e) => handleDrop(e, 'addons')}
+              onUpdateItem={(oldItem, newItem) => handleUpdateItem(oldItem, newItem, 'addons')}
+              onAddItem={handleAddAddonItem}
             />
           </div>
         </div>

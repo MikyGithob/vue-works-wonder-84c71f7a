@@ -4,15 +4,42 @@ import { Button } from "@/components/ui/button";
 import { Package } from "@/types/package";
 import { useDragAndDrop } from "@/hooks/useDragAndDrop";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
 
 interface PackageItemProps {
   pkg: Package;
   onRemove?: (pkg: Package) => void;
+  onUpdateTitle?: (newTitle: string) => void;
   isDraggable?: boolean;
 }
 
-const PackageItem = ({ pkg, onRemove, isDraggable = true }: PackageItemProps) => {
+const PackageItem = ({ pkg, onRemove, onUpdateTitle, isDraggable = true }: PackageItemProps) => {
   const { isDragging, handleDragStart, handleDragEnd } = useDragAndDrop();
+  const [isEditing, setIsEditing] = useState(false);
+  const [title, setTitle] = useState(pkg.title);
+
+  const handleTitleClick = () => {
+    if (onUpdateTitle) {
+      setIsEditing(true);
+    }
+  };
+
+  const handleTitleSubmit = () => {
+    setIsEditing(false);
+    if (title !== pkg.title && onUpdateTitle) {
+      onUpdateTitle(title);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleTitleSubmit();
+    } else if (e.key === "Escape") {
+      setIsEditing(false);
+      setTitle(pkg.title);
+    }
+  };
 
   return (
     <Card
@@ -34,7 +61,26 @@ const PackageItem = ({ pkg, onRemove, isDraggable = true }: PackageItemProps) =>
         </button>
       )}
       <CardContent className="p-6">
-        <h3 className="font-bold mb-2 text-lg">{pkg.title}</h3>
+        {isEditing ? (
+          <Input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            onBlur={handleTitleSubmit}
+            onKeyDown={handleKeyDown}
+            className="text-lg font-bold mb-2"
+            autoFocus
+          />
+        ) : (
+          <h3 
+            className={cn(
+              "font-bold mb-2 text-lg",
+              onUpdateTitle && "cursor-pointer hover:text-primary"
+            )}
+            onClick={handleTitleClick}
+          >
+            {pkg.title}
+          </h3>
+        )}
         <ul className="list-disc pl-5 mb-4 space-y-1">
           {pkg.points.map((point, index) => (
             <li key={index} className="text-sm text-muted-foreground">{point}</li>
