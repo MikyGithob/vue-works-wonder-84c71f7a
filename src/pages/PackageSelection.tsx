@@ -238,7 +238,6 @@ const PackageSelection = () => {
             <PackageSection
               title="Add-ons"
               packages={packages.addons}
-              onDragOver={handleDragOver}
               onDrop={(e) => handleDrop(e, 'addons')}
             />
           </div>

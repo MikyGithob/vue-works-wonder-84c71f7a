@@ -46,7 +46,7 @@ const PackageSection = ({
   return (
     <div className={cn(
       "space-y-4 w-[400px]",
-      isAddOns ? "bg-accent/10 p-6 rounded-lg" : "bg-background p-6 rounded-lg"
+      isAddOns ? "bg-accent/10 p-6 rounded-lg" : "bg-white/5 backdrop-blur-sm p-6 rounded-lg"
     )}>
       <div className="flex items-center justify-between mb-4">
         {showSelect && (

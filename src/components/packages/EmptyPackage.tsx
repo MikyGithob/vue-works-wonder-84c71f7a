@@ -18,7 +18,7 @@ const EmptyPackage = ({ onNameChange }: EmptyPackageProps) => {
   };
 
   return (
-    <div className="space-y-4 w-[400px] bg-background p-6 rounded-lg">
+    <div className="space-y-4 w-[400px] bg-white/5 backdrop-blur-sm p-6 rounded-lg">
       <Input
         value={packageName}
         onChange={handleNameChange}
