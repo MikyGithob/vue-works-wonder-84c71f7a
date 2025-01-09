@@ -6,6 +6,7 @@ import PackageSection from "@/components/packages/PackageSection";
 import { Package } from "@/types/package";
 import { Plus, ArrowLeft, ArrowRight } from "lucide-react";
 import EmptyPackage from "@/components/packages/EmptyPackage";
+import PackageName from "@/components/packages/PackageName";
 
 const initialPackages = {
   platinum: [
@@ -175,9 +176,10 @@ const PackageSelection = () => {
             >
               {packages[packageType] ? (
                 <>
-                  <h1 className="text-3xl font-bold text-white mb-4 capitalize">
-                    {packageType} Package
-                  </h1>
+                  <PackageName 
+                    initialName={packageType} 
+                    onNameChange={(newName) => handlePackageNameChange(packageType, newName)} 
+                  />
                   <PackageSection
                     title={packageType}
                     packages={packages[packageType]}
