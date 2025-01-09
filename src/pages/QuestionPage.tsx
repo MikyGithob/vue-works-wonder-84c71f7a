@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 interface MenuItem {
   id: number;
@@ -56,31 +55,25 @@ const QuestionPage = () => {
             </Button>
           </div>
 
-          <Carousel className="w-full max-w-2xl mx-auto">
-            <CarouselContent>
-              {menuItems.map((item) => (
-                <CarouselItem key={item.id}>
-                  <Card>
-                    <CardContent className="p-6">
-                      <h3 className="font-bold mb-2">{item.title}</h3>
-                      <ul className="list-disc pl-5 mb-4">
-                        {item.points.map((point, index) => (
-                          <li key={index}>{point}</li>
-                        ))}
-                      </ul>
-                      <p className="text-sm text-gray-600 mb-4">{item.description}</p>
-                      <div className="flex justify-between items-center">
-                        <span className="font-bold">${item.price.toFixed(2)}</span>
-                        <Button variant="outline">Select</Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
+          <div className="grid grid-cols-2 gap-6">
+            {menuItems.map((item) => (
+              <Card key={item.id}>
+                <CardContent className="p-6">
+                  <h3 className="font-bold mb-2">{item.title}</h3>
+                  <ul className="list-disc pl-5 mb-4">
+                    {item.points.map((point, index) => (
+                      <li key={index}>{point}</li>
+                    ))}
+                  </ul>
+                  <p className="text-sm text-gray-600 mb-4">{item.description}</p>
+                  <div className="flex justify-between items-center">
+                    <span className="font-bold">${item.price.toFixed(2)}</span>
+                    <Button variant="outline">Select</Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </Card>
       </div>
     </div>
