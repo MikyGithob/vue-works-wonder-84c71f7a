@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { MoveHorizontal, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 interface PackageSectionProps {
   title: string;
@@ -40,8 +41,13 @@ const PackageSection = ({
     }
   };
 
+  const isAddOns = title === "Add-ons";
+
   return (
-    <div className="space-y-4">
+    <div className={cn(
+      "space-y-4 w-[400px]",
+      isAddOns ? "bg-accent/10 p-6 rounded-lg" : "bg-background p-6 rounded-lg"
+    )}>
       <div className="flex items-center justify-between mb-4">
         {showSelect && (
           <Select defaultValue="option1">
@@ -54,7 +60,7 @@ const PackageSection = ({
             </SelectContent>
           </Select>
         )}
-        {title === "Add-ons" && onAddItem && (
+        {isAddOns && onAddItem && (
           <Button
             variant="outline"
             size="sm"
@@ -95,7 +101,7 @@ const PackageSection = ({
         </ScrollArea>
       </PackageDropZone>
       
-      {title !== "Add-ons" && <PaymentSummary packages={packages} title={title} />}
+      {!isAddOns && <PaymentSummary packages={packages} title={title} />}
     </div>
   );
 };

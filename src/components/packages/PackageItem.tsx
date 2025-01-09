@@ -47,8 +47,8 @@ const PackageItem = ({ pkg, onRemove, onUpdateTitle, isDraggable = true }: Packa
       onDragStart={(e) => handleDragStart(e, pkg)}
       onDragEnd={handleDragEnd}
       className={cn(
-        "relative mb-4 last:mb-0 transition-all duration-200 w-full",
-        isDraggable && "cursor-grab active:cursor-grabbing hover:shadow-md",
+        "relative mb-4 last:mb-0 transition-all duration-200 w-full bg-card shadow-sm hover:shadow-md",
+        isDraggable && "cursor-grab active:cursor-grabbing",
         isDragging && "opacity-50"
       )}
     >
@@ -67,7 +67,7 @@ const PackageItem = ({ pkg, onRemove, onUpdateTitle, isDraggable = true }: Packa
             onChange={(e) => setTitle(e.target.value)}
             onBlur={handleTitleSubmit}
             onKeyDown={handleKeyDown}
-            className="text-lg font-bold mb-2"
+            className="text-lg font-bold mb-2 focus-visible:ring-0"
             autoFocus
           />
         ) : (
