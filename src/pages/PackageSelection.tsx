@@ -88,9 +88,7 @@ const PackageSelection = () => {
 
     setPackages(prev => {
       const newPackages = { ...prev };
-      // Remove from source section
       newPackages[sourceSection] = prev[sourceSection].filter(pkg => pkg.id !== item.id);
-      // Add to target section
       newPackages[targetSection] = [...prev[targetSection], item];
       return newPackages;
     });
@@ -116,11 +114,15 @@ const PackageSelection = () => {
   };
 
   const handleNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % packageTypes.length);
+    if (currentIndex < packageTypes.length - 2) {
+      setCurrentIndex(prev => prev + 1);
+    }
   };
 
   const handlePrevious = () => {
-    setCurrentIndex((prev) => (prev - 1 + packageTypes.length) % packageTypes.length);
+    if (currentIndex > 0) {
+      setCurrentIndex(prev => prev - 1);
+    }
   };
 
   return (
@@ -128,14 +130,17 @@ const PackageSelection = () => {
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-3xl font-bold text-white">Package Selection</h1>
-          <PackageNavigation
-            onPrevious={handlePrevious}
-            onNext={handleNext}
-            disabled={false}
-          />
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="flex items-center">
+            <PackageNavigation
+              onPrevious={handlePrevious}
+              onNext={handleNext}
+              disabled={currentIndex === 0}
+            />
+          </div>
+
           {visiblePackages.map((packageType) => (
             <div
               key={packageType}
@@ -151,6 +156,14 @@ const PackageSelection = () => {
               />
             </div>
           ))}
+
+          <div className="flex items-center">
+            <PackageNavigation
+              onPrevious={handlePrevious}
+              onNext={handleNext}
+              disabled={currentIndex === packageTypes.length - 2}
+            />
+          </div>
 
           <div>
             <h1 className="text-3xl font-bold text-white mb-4">Add-ons</h1>
