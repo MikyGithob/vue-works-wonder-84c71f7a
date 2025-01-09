@@ -2,28 +2,16 @@
   <div class="min-h-screen bg-gradient-to-br from-blue-600 to-blue-400 p-8">
     <div class="max-w-7xl mx-auto">
       <div class="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr_auto_1fr] gap-8 items-start">
-        <template v-for="packageType in visiblePackages" :key="packageType">
-          <div class="min-h-[600px]">
-            <template v-if="packages[packageType]">
-              <package-name 
-                :initial-name="packageType" 
-                @name-change="(newName) => handlePackageNameChange(packageType, newName)" 
-              />
-              <package-section
-                :title="packageType"
-                :packages="packages[packageType]"
-                :show-select="true"
-                @remove-item="(pkg) => handleRemoveItem(pkg, packageType)"
-                @drop="(e) => handleDrop(e, packageType)"
-                @update-item="(oldItem, newItem) => handleUpdateItem(oldItem, newItem, packageType)"
-              />
-            </template>
-            <empty-package 
-              v-else
-              @name-change="(newName) => handlePackageNameChange(packageType, newName)" 
-            />
-          </div>
-        </template>
+        <package-list
+          v-for="packageType in visiblePackages"
+          :key="packageType"
+          :package-type="packageType"
+          :packages="packages[packageType]"
+          @name-change="handlePackageNameChange"
+          @remove-item="handleRemoveItem"
+          @drop="handleDrop"
+          @update-item="handleUpdateItem"
+        />
 
         <package-controls
           :on-previous="handlePrevious"
@@ -35,16 +23,12 @@
           :show-delete="visiblePackages[0] && !['platinum', 'gold', 'silver'].includes(visiblePackages[0])"
         />
 
-        <div>
-          <h1 class="text-3xl font-bold text-white mb-4">Add-ons</h1>
-          <package-section
-            title="Add-ons"
-            :packages="packages.addons"
-            @drop="(e) => handleDrop(e, 'addons')"
-            @update-item="(oldItem, newItem) => handleUpdateItem(oldItem, newItem, 'addons')"
-            @add-item="handleAddAddonItem"
-          />
-        </div>
+        <addons-section
+          :packages="packages.addons"
+          @drop="handleDrop"
+          @update-item="handleUpdateItem"
+          @add-item="handleAddAddonItem"
+        />
       </div>
     </div>
   </div>
@@ -53,10 +37,9 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { useToast } from '@/hooks/use-toast';
-import PackageName from '../packages/PackageName.vue';
-import PackageSection from '../packages/PackageSection.vue';
-import EmptyPackage from '../packages/EmptyPackage.vue';
+import PackageList from '../packages/PackageList.vue';
 import PackageControls from '../packages/PackageControls.vue';
+import AddonsSection from '../packages/AddonsSection.vue';
 import type { Package } from '@/types/package';
 
 const toast = useToast();
@@ -125,7 +108,7 @@ const visiblePackages = computed(() => [
 
 const handleDrop = (e: DragEvent, targetSection: string) => {
   e.preventDefault();
-  const item: Package = JSON.parse(e.dataTransfer.getData("application/json"));
+  const item: Package = JSON.parse(e.dataTransfer?.getData("application/json") || "{}");
   const sourceSection = Object.entries(packages.value).find(([_, items]) => 
     items.some(pkg => pkg.id === item.id)
   )?.[0];
