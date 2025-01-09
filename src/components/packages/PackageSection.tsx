@@ -10,18 +10,33 @@ interface PackageSectionProps {
   packages: Package[];
   showSelect?: boolean;
   onRemoveItem?: (pkg: Package) => void;
+  onDragOver?: (e: React.DragEvent) => void;
+  onDrop?: (e: React.DragEvent) => void;
 }
 
-const PackageSection = ({ title, packages, showSelect, onRemoveItem }: PackageSectionProps) => {
+const PackageSection = ({ 
+  title, 
+  packages, 
+  showSelect, 
+  onRemoveItem,
+  onDragOver,
+  onDrop 
+}: PackageSectionProps) => {
   const [isDraggingOver, setIsDraggingOver] = useState(false);
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDraggingOver(true);
+    onDragOver?.(e);
   };
 
   const handleDragLeave = () => {
     setIsDraggingOver(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    setIsDraggingOver(false);
+    onDrop?.(e);
   };
 
   return (
@@ -33,7 +48,7 @@ const PackageSection = ({ title, packages, showSelect, onRemoveItem }: PackageSe
       }`}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
-      onDrop={() => setIsDraggingOver(false)}
+      onDrop={handleDrop}
     >
       <div className="flex items-center justify-between mb-4">
         {showSelect && (
@@ -55,7 +70,7 @@ const PackageSection = ({ title, packages, showSelect, onRemoveItem }: PackageSe
               key={pkg.id}
               pkg={pkg}
               onRemove={onRemoveItem}
-              isDraggable={!onRemoveItem}
+              isDraggable={true}
             />
           ))}
         </div>
