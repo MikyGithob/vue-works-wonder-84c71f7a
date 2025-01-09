@@ -7,17 +7,18 @@
       </select>
       
       <button 
-        v-if="isAddOns && onAddItem" 
-        @click="onAddItem"
+        v-if="isAddOns" 
+        @click="$emit('addItem')"
         class="add-button"
       >
         + Add Item
       </button>
     </div>
     
-    <package-drop-zone 
-      :onDrop="onDrop" 
-      :isEmpty="packages.length === 0"
+    <div 
+      class="drop-zone"
+      @dragover.prevent
+      @drop="handleDrop"
     >
       <div class="scroll-area">
         <div v-if="packages.length === 0" class="empty-state">
@@ -34,57 +35,46 @@
             v-for="pkg in packages"
             :key="pkg.id"
             :pkg="pkg"
-            :onRemove="onRemoveItem"
-            :onUpdateTitle="(newTitle) => handleUpdateItem(pkg, newTitle)"
-            :isDraggable="true"
+            @remove="$emit('removeItem', pkg)"
+            @update:title="(newTitle) => $emit('updateItem', pkg, { ...pkg, title: newTitle })"
+            draggable="true"
+            @dragstart="handleDragStart($event, pkg)"
           />
         </div>
       </div>
-    </package-drop-zone>
-    
-    <payment-summary 
-      v-if="!isAddOns" 
-      :packages="packages" 
-      :title="title" 
-    />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { ref, computed } from 'vue';
 import PackageItem from './PackageItem.vue';
-import PackageDropZone from './PackageDropZone.vue';
-import PaymentSummary from './PaymentSummary.vue';
+import type { Package } from '@/types/package';
 
-interface Package {
-  id: number;
-  title: string;
-  points: string[];
-  price: number;
-  description: string;
-}
-
-interface Props {
+const props = defineProps<{
   title: string;
   packages: Package[];
   showSelect?: boolean;
-  onRemoveItem?: (pkg: Package) => void;
-  onDrop?: (e: DragEvent) => void;
-  onUpdateItem?: (oldItem: Package, newItem: Package) => void;
-  onAddItem?: () => void;
-}
+}>();
 
-const props = withDefaults(defineProps<Props>(), {
-  showSelect: false
-});
+const emit = defineEmits<{
+  (e: 'removeItem', pkg: Package): void;
+  (e: 'updateItem', oldItem: Package, newItem: Package): void;
+  (e: 'addItem'): void;
+  (e: 'drop', event: DragEvent): void;
+}>();
 
 const selectedOption = ref('option1');
 const isAddOns = computed(() => props.title === 'Add-ons');
 
-const handleUpdateItem = (oldItem: Package, newTitle: string) => {
-  if (props.onUpdateItem) {
-    props.onUpdateItem(oldItem, { ...oldItem, title: newTitle });
+const handleDragStart = (event: DragEvent, pkg: Package) => {
+  if (event.dataTransfer) {
+    event.dataTransfer.setData('application/json', JSON.stringify(pkg));
   }
+};
+
+const handleDrop = (event: DragEvent) => {
+  emit('drop', event);
 };
 </script>
 
@@ -124,19 +114,22 @@ const handleUpdateItem = (oldItem: Package, newTitle: string) => {
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: white;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
 }
 
 .add-button:hover {
   background: rgba(255, 255, 255, 0.1);
 }
 
+.drop-zone {
+  min-height: 400px;
+  border: 2px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
 .scroll-area {
   height: calc(100vh - 500px);
   overflow-y: auto;
-  padding-right: 1rem;
 }
 
 .empty-state {
