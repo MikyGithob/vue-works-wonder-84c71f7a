@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import PresentationSlide from "@/pages/PresentationSlide";
-import QuestionPage from "@/pages/QuestionPage";
-import PackageSelection from "@/pages/PackageSelection";
+import PresentationSlide from "./PresentationSlide";
+import QuestionPage from "./QuestionPage";
+import PackageSelection from "./PackageSelection";
 
 type Step = "presentation" | "question" | "packages";
 
