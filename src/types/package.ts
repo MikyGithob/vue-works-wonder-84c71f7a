@@ -5,3 +5,5 @@ export interface Package {
   price: number;
   description: string;
 }
+
+export type PackageType = 'platinum' | 'gold' | 'silver' | string;
